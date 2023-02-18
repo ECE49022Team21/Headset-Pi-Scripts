@@ -54,3 +54,4 @@ dkms.conf
 # Mac Folder Config
 .DS_Store
 .DS_Store?
+I2Clib/.DS_Store
