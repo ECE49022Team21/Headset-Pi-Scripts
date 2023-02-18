@@ -78,11 +78,16 @@ int main()
     int scl_pin = 3;
 
     int speed_grade = I2C_STANDARD_MODE;
-    printf("Clock Speed: %d Hz\n", speed_grade);
+    printf("I2C Clock Speed: %d Hz\n", speed_grade);
 
     // Configure at standard mode:
-    config_i2c(sda_pin, scl_pin, speed_grade);
-    printf("I2C configured\n");
+    int errCheck = config_i2c(sda_pin, scl_pin, speed_grade);
+    if (errCheck < 0)
+    {
+        printf("I2C configuration error: %d\n", errCheck);
+        return EXIT_FAILURE;
+    }
+    else printf("I2C configured\n");
 
     // Scan I2C bus and identify if device is present:
     if (Scan_I2C_Bus() < 0) return EXIT_FAILURE;

@@ -52,4 +52,5 @@ Mkfile.old
 dkms.conf
 
 # Mac Folder Config
-*.DS_Store
+.DS_Store
+.DS_Store?
