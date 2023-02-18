@@ -68,6 +68,7 @@ int setup_microsleep_hard(void) {
 
     // Get PI version by parsing /proc/cpu_info:
     pi_version = get_pi_version__();
+    printf("Raspberry Pi Version: %d\n", pi_version);
 
     // Set BCM base addresses according to the found PI version:
     if ((pi_version == 0) || (pi_version == 1)) {
