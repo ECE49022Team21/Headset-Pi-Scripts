@@ -80,6 +80,9 @@ int main()
     int speed_grade = I2C_STANDARD_MODE;
     printf("I2C Clock Speed: %d Hz\n", speed_grade);
 
+    //Display pi Version
+    printf("Raspberry Pi Version: %d\n", get_pi_version__());
+
     // Configure at standard mode:
     int errCheck = config_i2c(sda_pin, scl_pin, speed_grade);
     if (errCheck < 0)
