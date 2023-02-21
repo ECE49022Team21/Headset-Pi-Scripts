@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-# include<time.h>
+#include <time.h>
 
 #include "./I2Clib/pi_i2c.h"
-#include "./I2Clib/GPIOlib/get_pi_version.h"     // Determines PI versions
+#include "./I2Clib/GPIOlib/get_pi_version.h" // Determines PI versions
 
 const int ADC_Address = 0x54;
 const int Reg_Conversion_Result = 0b000;
@@ -16,20 +16,21 @@ const int Reg_Hysteresis = 0b101;
 const int Reg_Lowest_Conversion = 0b110;
 const int Reg_Highest_Conversion = 0b111;
 
-
 int Scan_I2C_Bus()
 {
     int address_book[127];
 
     int ret;
 
-    if ((ret = scan_bus_i2c(address_book)) < 0) {
+    if ((ret = scan_bus_i2c(address_book)) < 0)
+    {
         printf("Error! i2c bus scan returned error code: %d\n\n", ret);
         return -1;
     }
 
     // Check and see if ADC was detected on the bus
-    if (address_book[ADC_Address] != 1) {
+    if (address_book[ADC_Address] != 1)
+    {
         printf("ADC was not detected at 0x%X\n", ADC_Address);
         return -1;
     }
@@ -42,14 +43,19 @@ int Scan_I2C_Bus()
 void Write(int register_address, int *data, int n_bytes)
 {
     int ret = write_i2c(ADC_Address, register_address, data, n_bytes);
-    if (ret < 0) printf("Error! i2c write returned error code: %d\n\n", ret);
+    if (ret < 0)
+        printf("Error! i2c write returned error code: %d\n\n", ret);
 }
 
 void Read(int register_address, int *data, int n_bytes, int setRegisterBool)
 {
-    for (int i = 0; i < n_bytes; i++) { data[i] = 0; }
+    for (int i = 0; i < n_bytes; i++)
+    {
+        data[i] = 0;
+    }
     int ret = read_i2c(ADC_Address, register_address, data, n_bytes, setRegisterBool);
-    if (ret < 0) printf("Error! i2c read returned error code: %d\n\n", ret);
+    if (ret < 0)
+        printf("Error! i2c read returned error code: %d\n\n", ret);
 }
 
 void ConfigureADC()
@@ -86,7 +92,7 @@ int main()
     int speed_grade = I2C_FULL_SPEED;
     printf("I2C Clock Speed: %d Hz\n", speed_grade);
 
-    //Display pi Version
+    // Display pi Version
     printf("Raspberry Pi Version: %d\n", get_pi_version__());
 
     // Configure at standard mode:
@@ -96,14 +102,16 @@ int main()
         printf("I2C configuration error: %d\n", errCheck);
         return EXIT_FAILURE;
     }
-    else printf("I2C configured\n");
+    else
+        printf("I2C configured\n");
 
     // Scan I2C bus and identify if device is present:
-    if (Scan_I2C_Bus() < 0) return EXIT_FAILURE;
+    if (Scan_I2C_Bus() < 0)
+        return EXIT_FAILURE;
 
     ConfigureADC();
 
-    //set register address with a read
+    // set register address with a read
     int data[2];
     int n_bytes = 2;
     Read(Reg_Conversion_Result, data, n_bytes, 1);
@@ -112,15 +120,18 @@ int main()
 
     clock_t start, end;
     double execution_time;
-    float audioValues[8000 * 10];
-    int rawValues[8000 * 10];
+    float audioValues[8000];
+    int rawValues[8000];
     start = clock();
-    for (int i = 0; i < 8000 * 10; i++)
+    for (int x = 0; x < 100; x++)
     {
-        rawValues[i] = GetRawValue();
+        for (int i = 0; i < 8000; i++)
+        {
+            rawValues[i] = GetRawValue();
+        }
     }
     end = clock();
-    execution_time = ((double)(end - start))/CLOCKS_PER_SEC;
+    execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
 
     /*for (int i = 0; i < 8000; i++)
     {
@@ -133,7 +144,7 @@ int main()
     // Open file:
     FILE *fd = fopen("./audioOut.binary", "w");
 
-    //Write file:
+    // Write file:
     fwrite(&audioValues, sizeof(audioValues), 1, fd);
 
     // Close file:
