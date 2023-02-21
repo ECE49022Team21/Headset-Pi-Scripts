@@ -174,6 +174,7 @@ int main()
     ConfigureADC();
     printf("ADC Configured\n");
     
+    printf("Recording Audio\n");
     float *audioValues = RecordAudio(5);
 
     // Open file:
@@ -185,6 +186,7 @@ int main()
     // Close file:
     fclose(fd);
 
+    printf("Playing Audio\n");
     PlayAudio(audioValues);
 
     free(audioValues);
