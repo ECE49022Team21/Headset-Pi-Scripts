@@ -105,7 +105,7 @@ int main()
         float audioValue = GetAudioValue();
         printf("Audio Value: %f\n", audioValue);
         x[i] = audioValue;
-        usleep(125);
+        usleep(62.5);
     }
 
     // Open file:
