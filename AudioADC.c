@@ -58,15 +58,19 @@ void ConfigureADC()
     Write(Reg_Configuration, data, n_bytes);
 }
 
-float GetAudioValue()
+float GetAudioValue(int rawValue)
+{
+    voltageStep = (rawValue >> 2) & 0b1111111111;
+    float audio = (((float)2 / 1024) * voltageStep) - 1;
+    return audio;
+}
+
+int GetRawValue()
 {
     int data[2];
     int n_bytes = 2;
     Read(Reg_Conversion_Result, data, n_bytes);
-    int voltageStep = ((data[0] << 8) | data[1]);
-    voltageStep = (voltageStep >> 2) & 0b1111111111;
-    float audio = (((float)2 / 1024) * voltageStep) - 1;
-    return audio;
+    return ((data[0] << 8) | data[1]);
 }
 
 int main()
@@ -99,23 +103,24 @@ int main()
     ConfigureADC();
     printf("ADC Configured\n");
 
-    float x[16000];
+    float audioValues[16000];
+    int rawValues[16000];
     for (int i = 0; i < 16000; i++)
     {
-        float audioValue = GetAudioValue();
-        x[i] = audioValue;
+        rawValues[i] = GetRawValue();
     }
 
     for (int i = 0; i < 16000; i++)
     {
-        printf("Audio Value: %f\n", x[i]);
+        audioValues[i] = GetAudioValue();
+        printf("Audio Value: %f\n", audioValues[i]);
     }
 
     // Open file:
     FILE *fd = fopen("./audioOut.binary", "w");
 
     //Write file:
-    fwrite(&x, sizeof(x), 1, fd);
+    fwrite(&audioValues, sizeof(audioValues), 1, fd);
 
     // Close file:
     fclose(fd);
