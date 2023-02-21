@@ -71,7 +71,7 @@ float GetVoltageValue()
 
 int main()
 {
-    printf("Starting Audio Collection\n");
+    printf("Initializing Audio Collection\n");
     // Use the default I2C pins:
     // Ensure that Raspian I2C interface is disabled via rasp-config otherwise
     // risk unpredictable behavior!
