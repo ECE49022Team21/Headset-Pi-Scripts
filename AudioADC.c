@@ -122,29 +122,25 @@ int main()
 
     avgReadTime = 91.252389 / 800000;
     double uSleepTime = (0.000125 - avgReadTime) * 1000000;
-    clock_t start, end;
+    // clock_t start, end;
     double execution_time;
     float audioValues[8000];
     int rawValues[8000];
-    start = clock();
-    for (int x = 0; x < 100; x++)
+    // start = clock();
+    for (int i = 0; i < 8000; i++)
     {
-        for (int i = 0; i < 8000; i++)
-        {
-            rawValues[i] = GetRawValue();
-            usleep(uSleepTime);
-        }
+        rawValues[i] = GetRawValue();
+        usleep(uSleepTime);
     }
-    end = clock();
-    execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+    // end = clock();
+    // execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+    // printf("Execution Time: %f\n", execution_time);
 
     /*for (int i = 0; i < 8000; i++)
     {
         audioValues[i] = GetAudioValue(rawValues[i]);
         printf("Audio Value: %f\n", audioValues[i]);
     }*/
-
-    printf("Execution Time: %f\n", execution_time);
 
     // Open file:
     FILE *fd = fopen("./audioOut.binary", "w");
