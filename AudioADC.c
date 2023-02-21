@@ -114,13 +114,13 @@ int main()
     double execution_time;
     float audioValues[8000];
     int rawValues[8000];
-    start = clock();
     for (int i = 0; i < 8000; i++)
     {
+        start = clock();
         rawValues[i] = GetRawValue();
+        end = clock();
+        execution_time = ((double)(end - start))/CLOCKS_PER_SEC;
     }
-    end = clock();
-    execution_time = ((double)(end - start))/CLOCKS_PER_SEC;
 
     /*for (int i = 0; i < 8000; i++)
     {
