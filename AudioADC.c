@@ -58,15 +58,15 @@ void ConfigureADC()
     Write(Reg_Configuration, data, n_bytes);
 }
 
-float GetVoltageValue()
+float GetAudioValue()
 {
     int data[2];
     int n_bytes = 2;
     Read(Reg_Conversion_Result, data, n_bytes);
     int voltageStep = ((data[0] << 8) | data[1]);
     voltageStep = (voltageStep >> 2) & 0b1111111111;
-    float voltage = ((float)3.3 / 1024) * voltageStep;
-    return voltage;
+    float audio = (((float)2 / 1024) * voltageStep) - 1;
+    return audio;
 }
 
 int main()
@@ -102,7 +102,7 @@ int main()
     int x = 1;
     while (x == 1)
     {
-        printf("voltage: %f", GetVoltageValue());
+        printf("Audio Value: %f\n", GetAudioValue());
         usleep(125);
     }
 }
