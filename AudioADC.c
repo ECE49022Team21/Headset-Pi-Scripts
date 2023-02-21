@@ -99,7 +99,7 @@ int GetRawAudioValue()
     return ((data[0] << 8) | data[1]);
 }
 
-int* RecordAudio(int seconds)
+float* RecordAudio(int seconds)
 {
     clock_t start, end;
     double execution_time;
@@ -124,13 +124,20 @@ int* RecordAudio(int seconds)
     return audioValues;
 }
 
-void PlayAudio(int* audioValues)
+void PlayAudio(float* audioValues)
 {
-    for (int i = 0; i < (sizeof(audioValues) / sizeof(int)); i++)
+    int rawAudioValues[sizeof(audioValues) / sizeof(float)];
+
+    for (int i = 0; i < (sizeof(audioValues) / sizeof(float)); i++)
+    {
+        rawAudioValues[i] = ((audioValues[i] + 1) * 4096) / 2;
+    }
+
+    for (int i = 0; i < (sizeof(audioValues) / sizeof(float)); i++)
     {
         int data[2];
-        data[1] = 0b11111111 & audioValues[i];
-        data[0] = 0b1111 & (audioValues[i] >> 8);
+        data[1] = 0b11111111 & rawAudioValues[i];
+        data[0] = 0b1111 & (rawAudioValues[i] >> 8);
         Write(DAC_Address, Reg_Dac_Output, data, 2);
     }
 }
