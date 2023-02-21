@@ -103,7 +103,7 @@ float* RecordAudio(int seconds)
 {
     clock_t start, end;
     double execution_time;
-    float audioValues[8000 * seconds];
+    float *audioValues = malloc(8000 * seconds * sizeof(float));
     int rawValues[8000 * seconds];
     start = clock();
     for (int i = 0; i < 8000 * seconds; i++)
@@ -174,7 +174,7 @@ int main()
     ConfigureADC();
     printf("ADC Configured\n");
     
-    int *audioValues = RecordAudio(5);
+    float *audioValues = RecordAudio(5);
 
     // Open file:
     FILE *fd = fopen("./audioOut.binary", "w");
@@ -186,4 +186,6 @@ int main()
     fclose(fd);
 
     PlayAudio(audioValues);
+
+    free(audioValues);
 }
