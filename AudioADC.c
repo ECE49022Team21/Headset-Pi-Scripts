@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+# include<time.h>
 
 #include "./I2Clib/pi_i2c.h"
 #include "./I2Clib/GPIOlib/get_pi_version.h"     // Determines PI versions
@@ -108,18 +109,26 @@ int main()
     Read(Reg_Conversion_Result, data, n_bytes, 1);
 
     printf("ADC Configured\n");
+
+    clock_t start, end;
+    double execution_time;
     float audioValues[8000];
     int rawValues[8000];
+    start = clock();
     for (int i = 0; i < 8000; i++)
     {
         rawValues[i] = GetRawValue();
     }
+    end = clock();
+    execution_time = ((double)(end - start))/CLOCKS_PER_SEC;
 
-    for (int i = 0; i < 8000; i++)
+    /*for (int i = 0; i < 8000; i++)
     {
         audioValues[i] = GetAudioValue(rawValues[i]);
         printf("Audio Value: %f\n", audioValues[i]);
-    }
+    }*/
+
+    printf("Execution Time: %f\n", execution_time);
 
     // Open file:
     FILE *fd = fopen("./audioOut.binary", "w");
