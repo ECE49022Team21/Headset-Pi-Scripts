@@ -99,10 +99,21 @@ int main()
     ConfigureADC();
     printf("ADC Configured\n");
 
-    int x = 1;
-    while (x == 1)
+    int x[16000 * 5];
+    for (int i = 0; i < 16000*5; i++)
     {
-        printf("Audio Value: %f\n", GetAudioValue());
+        int audioValue = GetAudioValue();
+        printf("Audio Value: %f\n", audioValue);
+        x[i] = audioValue;
         usleep(125);
     }
+
+    // Open file:
+    FILE *fd = fopen("./audioOut.binary", "w");
+
+    //Write file:
+    fwrite(&x, sizeof(x), 1, fd);
+
+    // Close file:
+    fclose(fd);
 }
