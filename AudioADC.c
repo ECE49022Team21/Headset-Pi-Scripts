@@ -99,10 +99,10 @@ int main()
     ConfigureADC();
     printf("ADC Configured\n");
 
-    int x[16000 * 5];
+    float x[16000 * 5];
     for (int i = 0; i < 16000*5; i++)
     {
-        int audioValue = GetAudioValue();
+        float audioValue = GetAudioValue();
         printf("Audio Value: %f\n", audioValue);
         x[i] = audioValue;
         usleep(125);
