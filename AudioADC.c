@@ -44,10 +44,10 @@ void Write(int register_address, int *data, int n_bytes)
     if (ret < 0) printf("Error! i2c write returned error code: %d\n\n", ret);
 }
 
-void Read(int register_address, int *data, int n_bytes)
+void Read(int register_address, int *data, int n_bytes, int setRegisterBool)
 {
     for (int i = 0; i < n_bytes; i++) { data[i] = 0; }
-    int ret = read_i2c(ADC_Address, register_address, data, n_bytes);
+    int ret = read_i2c(ADC_Address, register_address, data, n_bytes, setRegisterBool);
     if (ret < 0) printf("Error! i2c read returned error code: %d\n\n", ret);
 }
 
@@ -69,7 +69,7 @@ int GetRawValue()
 {
     int data[2];
     int n_bytes = 2;
-    Read(Reg_Conversion_Result, data, n_bytes);
+    Read(Reg_Conversion_Result, data, n_bytes, 0);
     return ((data[0] << 8) | data[1]);
 }
 
@@ -101,8 +101,13 @@ int main()
     if (Scan_I2C_Bus() < 0) return EXIT_FAILURE;
 
     ConfigureADC();
-    printf("ADC Configured\n");
 
+    //set register address with a read
+    int data[2];
+    int n_bytes = 2;
+    Read(Reg_Conversion_Result, data, n_bytes, 1);
+
+    printf("ADC Configured\n");
     float audioValues[8000];
     int rawValues[8000];
     for (int i = 0; i < 8000; i++)

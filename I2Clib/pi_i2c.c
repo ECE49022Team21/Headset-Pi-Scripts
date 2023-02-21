@@ -77,20 +77,21 @@
 #include <errno.h> // C Standard for error conditions
 
 // Include header files:
-#include "pi_i2c.h"                   // Speed grade, macros, and outward
-                                      // function prototypes.
-#include "write_conditions_to_bus.h"  // I2C START and STOP function protos
-#include "write_bus.h"                // I2C write to bus functions
-#include "read_bus.h"                 // I2C read to bus functions
-#include "config.h"                   // I2C timing and variable defs
-#include "detect_recover_bus.h"       // Detect and recover I2C bus
-#include "clock_stretching.h"         // Support clock stretching
+#include "pi_i2c.h"                             // Speed grade, macros, and outward
+                                                // function prototypes.
+#include "write_conditions_to_bus.h"            // I2C START and STOP function protos
+#include "write_bus.h"                          // I2C write to bus functions
+#include "read_bus.h"                           // I2C read to bus functions
+#include "config.h"                             // I2C timing and variable defs
+#include "detect_recover_bus.h"                 // Detect and recover I2C bus
+#include "clock_stretching.h"                   // Support clock stretching
 #include "./GPIOlib/pi_lw_gpio.h"               // GPIO library for the Pi
-#include "./MicroSleepLib/pi_microsleep_hard.h"       // Hard microsleep function for the Pi
+#include "./MicroSleepLib/pi_microsleep_hard.h" // Hard microsleep function for the Pi
 
 // Read N number of bytes from the specified register address of a device
 int read_i2c(unsigned int device_address, unsigned int register_address,
-             int *data, unsigned int n_bytes) {
+             int *data, unsigned int n_bytes, int setRegisterBool)
+{
     // Definitions:
     int byte;
     int i;
@@ -102,80 +103,96 @@ int read_i2c(unsigned int device_address, unsigned int register_address,
 
     // Check if I2C has been configured for use; otherwise bail as important
     // timings are not yet defined:
-    if (!config_i2c_flag) {
+    if (!config_i2c_flag)
+    {
         return -EI2CNOTCFG;
     }
 
     // Only 7-bit addressing is supported:
-    if (device_address > 0x7F) {
+    if (device_address > 0x7F)
+    {
         return -EINVAL;
     }
 
     // Register address cannot be greater than 0xFF (11111111)
     // (i.e. can only be an 8-bit number):
-    if (register_address > 0xFF) {
+    if (register_address > 0xFF)
+    {
         return -EINVAL;
     }
 
     // Zero makes no sense caller:
-    if (n_bytes == 0) {
+    if (n_bytes == 0)
+    {
         return -EINVAL;
     }
 
     // Get bus into known state by using STOP condition:
-    if ((ret = write_stop_condition_to_bus()) < 0) {
+    if ((ret = write_stop_condition_to_bus()) < 0)
+    {
         return ret;
     }
 
     // Make bus busy with START condition so devices know to expect message:
-    if ((ret = write_start_condition_to_bus()) < 0) {
+    if ((ret = write_start_condition_to_bus()) < 0)
+    {
         return ret;
     }
 
-    // Write address frame to bus and begin message with device:
-    write_status = write_address_frame_to_bus(device_address, WRITE_FLAG);
+    if (setRegisterBool == 1)
+    {
+        // Write address frame to bus and begin message with device:
+        write_status = write_address_frame_to_bus(device_address, WRITE_FLAG);
 
-    if (write_status == NACK) {
-        // In case a STOP condition cannot be written and bus
-        // encounters an error
-        if ((ret = write_stop_condition_to_bus()) < 0) {
+        if (write_status == NACK)
+        {
+            // In case a STOP condition cannot be written and bus
+            // encounters an error
+            if ((ret = write_stop_condition_to_bus()) < 0)
+            {
+                return ret;
+            }
+            // Keep track of statistics for any caller interested in those
+            // kind of numbers:
+            statistics.num_nack++;
+
+            return -ENACK;
+        }
+
+        // Write register address to device:
+        write_status = write_data_frame_to_bus(register_address);
+
+        if (write_status == NACK)
+        {
+            // In case a STOP condition cannot be written and bus
+            // encounters an error
+            if ((ret = write_stop_condition_to_bus()) < 0)
+            {
+                return ret;
+            }
+            // Keep track of statistics for any caller interested in those
+            // kind of numbers:
+            statistics.num_bad_reg++;
+
+            return -EBADREGADDR;
+        }
+
+        // A repeated start condition is required prior to reading off data:
+        if ((ret = write_repeated_start_condition_to_bus() < 0))
+        {
             return ret;
         }
-        // Keep track of statistics for any caller interested in those
-        // kind of numbers:
-        statistics.num_nack++;
-
-        return -ENACK;
-    }
-
-    // Write register address to device:
-    write_status = write_data_frame_to_bus(register_address);
-
-    if (write_status == NACK) {
-        // In case a STOP condition cannot be written and bus
-        // encounters an error
-        if ((ret = write_stop_condition_to_bus()) < 0) {
-            return ret;
-        }
-        // Keep track of statistics for any caller interested in those
-        // kind of numbers:
-        statistics.num_bad_reg++;
-
-        return -EBADREGADDR;
-    }
-
-    // A repeated start condition is required prior to reading off data:
-    if ((ret = write_repeated_start_condition_to_bus() < 0)) {
-        return ret;
     }
 
     // Write address frame to bus and begin message with the device:
     write_status = write_address_frame_to_bus(device_address, READ_FLAG);
 
-    if (write_status == NACK) {
+    if (write_status == NACK)
+    {
         // In case a STOP condition cannot be written and bus
         // encounters an error
-        if ((ret = write_stop_condition_to_bus()) < 0) {
+        if ((ret = write_stop_condition_to_bus()) < 0)
+        {
             return ret;
         }
         // Keep track of statistics for any caller interested in those
@@ -186,9 +203,11 @@ int read_i2c(unsigned int device_address, unsigned int register_address,
     }
 
     // Read data from the specified register:
-    for (i = 0; i < n_bytes; i++) {
+    for (i = 0; i < n_bytes; i++)
+    {
         // Only NACK if it is the last byte to be read:
-        if (i == (n_bytes - 1)) {
+        if (i == (n_bytes - 1))
+        {
             ack_flag = 0;
         }
 
@@ -198,7 +217,8 @@ int read_i2c(unsigned int device_address, unsigned int register_address,
 
         // Consider a NACK during data transfer to be a bad transfer; device
         // stopped responding to write for some reason:
-        if (byte == NACK) {
+        if (byte == NACK)
+        {
             return -EBADXFR;
         }
         // Keep track of statistics for any caller interested in those
@@ -209,7 +229,8 @@ int read_i2c(unsigned int device_address, unsigned int register_address,
     }
 
     // Complete message by transition the bus to IDLE:
-    if ((ret = write_stop_condition_to_bus()) < 0) {
+    if ((ret = write_stop_condition_to_bus()) < 0)
+    {
         return ret;
     }
 
@@ -218,7 +239,8 @@ int read_i2c(unsigned int device_address, unsigned int register_address,
 
 // Write N number of bytes to the specified register address of a device
 int write_i2c(unsigned int device_address, unsigned int register_address,
-              int *data, unsigned int n_bytes) {
+              int *data, unsigned int n_bytes)
+{
     // Definitions:
     int write_status;
     int i;
@@ -226,43 +248,51 @@ int write_i2c(unsigned int device_address, unsigned int register_address,
 
     // Check if I2C has been configured for use; otherwise bail as important
     // timings are not yet defined:
-    if (!config_i2c_flag) {
+    if (!config_i2c_flag)
+    {
         return -EI2CNOTCFG;
     }
 
     // Only 7-bit addressing is supported:
-    if (device_address > 0x7F) {
+    if (device_address > 0x7F)
+    {
         return -EINVAL;
     }
 
     // Register address cannot be greater than 0xFF (11111111)
     // (i.e. can only be an 8-bit number):
-    if (register_address > 0xFF) {
+    if (register_address > 0xFF)
+    {
         return -EINVAL;
     }
 
     // Zero makes no sense caller:
-    if (n_bytes == 0) {
+    if (n_bytes == 0)
+    {
         return -EINVAL;
     }
 
     // Get bus into known state by using STOP condition:
-    if ((ret = write_stop_condition_to_bus()) < 0) {
+    if ((ret = write_stop_condition_to_bus()) < 0)
+    {
         return ret;
     }
 
     // Make bus busy with START condition so devices know to expect message:
-    if ((ret = write_start_condition_to_bus()) < 0) {
+    if ((ret = write_start_condition_to_bus()) < 0)
+    {
         return ret;
     }
 
     // Write address frame to bus and begin message with the device:
     write_status = write_address_frame_to_bus(device_address, WRITE_FLAG);
 
-    if (write_status == NACK) {
+    if (write_status == NACK)
+    {
         // In case a STOP condition cannot be written and bus
         // encounters an error
-        if ((ret = write_stop_condition_to_bus()) < 0) {
+        if ((ret = write_stop_condition_to_bus()) < 0)
+        {
             return ret;
         }
         // Keep track of statistics for any caller interested in those
@@ -275,10 +305,12 @@ int write_i2c(unsigned int device_address, unsigned int register_address,
     // Write register address to the device:
     write_status = write_data_frame_to_bus(register_address);
 
-    if (write_status == NACK) {
+    if (write_status == NACK)
+    {
         // In case a STOP condition cannot be written and bus
         // encounters an error
-        if ((ret = write_stop_condition_to_bus()) < 0) {
+        if ((ret = write_stop_condition_to_bus()) < 0)
+        {
             return ret;
         }
         // Keep track of statistics for any caller interested in those
@@ -289,15 +321,18 @@ int write_i2c(unsigned int device_address, unsigned int register_address,
     }
 
     // Write data to specified register:
-    for (i = 0; i < n_bytes; i++) {
+    for (i = 0; i < n_bytes; i++)
+    {
         write_status = write_data_frame_to_bus(data[i]);
 
         // Consider a NACK during data transfer to be a bad transfer; device
         // stopped responding to write for some reason:
-        if (write_status == NACK) {
+        if (write_status == NACK)
+        {
             // In case a STOP condition cannot be written and bus
             // encounters an error
-            if ((ret = write_stop_condition_to_bus()) < 0) {
+            if ((ret = write_stop_condition_to_bus()) < 0)
+            {
                 return ret;
             }
             // Keep track of statistics for any caller interested in those
@@ -312,7 +347,8 @@ int write_i2c(unsigned int device_address, unsigned int register_address,
     }
 
     // Complete message by transition the bus to IDLE:
-    if ((ret = write_stop_condition_to_bus()) < 0) {
+    if ((ret = write_stop_condition_to_bus()) < 0)
+    {
         return ret;
     }
 
@@ -320,7 +356,8 @@ int write_i2c(unsigned int device_address, unsigned int register_address,
 }
 
 // Scan bus for devices (only supporting 7-bit addressing)
-int scan_bus_i2c(int *address_book) {
+int scan_bus_i2c(int *address_book)
+{
     // Definitions:
     int i;
     int ret;
@@ -329,23 +366,28 @@ int scan_bus_i2c(int *address_book) {
 
     // Check if I2C has been configured for use; otherwise bail as important
     // timings are not yet defined:
-    if (!config_i2c_flag) {
+    if (!config_i2c_flag)
+    {
         return -EI2CNOTCFG;
     }
 
     // Initialize array to zero to prevent any confusion for caller:
-    for (i = 0; i < 127; i++) {
+    for (i = 0; i < 127; i++)
+    {
         address_book[i] = 0x0;
     }
 
     // Get bus into known state by using STOP condition:
-    if ((ret = write_stop_condition_to_bus()) < 0) {
+    if ((ret = write_stop_condition_to_bus()) < 0)
+    {
         return ret;
     }
 
-    for (i = 0; i < 128; i++) {
+    for (i = 0; i < 128; i++)
+    {
         // Make bus busy with START condition so devices know to expect message:
-        if ((ret = write_start_condition_to_bus()) < 0) {
+        if ((ret = write_start_condition_to_bus()) < 0)
+        {
             return ret;
         }
 
@@ -353,13 +395,15 @@ int scan_bus_i2c(int *address_book) {
         write_status = write_address_frame_to_bus(i, WRITE_FLAG);
 
         // Transition bus back to IDLE in case the device has ACK'd during scan:
-        if ((ret = write_stop_condition_to_bus()) < 0) {
+        if ((ret = write_stop_condition_to_bus()) < 0)
+        {
             return ret;
         }
 
         // If device responded, update i2c address book to say if a
         // device was detected:
-        if (write_status == ACK) {
+        if (write_status == ACK)
+        {
             address_book[i] = 0x1;
         }
     }
@@ -369,17 +413,20 @@ int scan_bus_i2c(int *address_book) {
 
 // Reset bus by issuing 9 clock pulses. Typically used to un-stuck the SDA line
 // after a device is forcing it low
-int reset_i2c(void) {
+int reset_i2c(void)
+{
     int i;
     int ret;
 
     // Check if I2C has been configured for use; otherwise bail as important
     // timings are not yet defined:
-    if (!config_i2c_flag) {
+    if (!config_i2c_flag)
+    {
         return -EI2CNOTCFG;
     }
 
-    for (i = 0; i < 9; i++) {
+    for (i = 0; i < 9; i++)
+    {
         // End clock pulse by clearing SCL:
         gpio_set_mode(GPIO_OUTPUT, scl_gpio_pin);
 
@@ -394,7 +441,8 @@ int reset_i2c(void) {
         microsleep_hard(scl_t_high_sleep_us);
 
         // Adhere to UM10204 I2C-bus specification 3.1.9:
-        if ((ret = support_clock_stretching()) < 0) {
+        if ((ret = support_clock_stretching()) < 0)
+        {
             // In the case clock stretching ends in a time out, immeadiately
             // exit as device needs to be power cycled:
             return ret;
@@ -409,12 +457,14 @@ int reset_i2c(void) {
 }
 
 // Return a structure of statistics recorded by Pi I2C
-struct pi_i2c_statistics get_statistics_i2c(void) {
+struct pi_i2c_statistics get_statistics_i2c(void)
+{
     return statistics;
 }
 
 // Return internal configuration values
-struct pi_i2c_configs get_configs_i2c(void) {
+struct pi_i2c_configs get_configs_i2c(void)
+{
     struct pi_i2c_configs configs = {
         .scl_t_low_sleep_us = scl_t_low_sleep_us,
         .scl_t_high_sleep_us = scl_t_high_sleep_us,
@@ -422,8 +472,7 @@ struct pi_i2c_configs get_configs_i2c(void) {
         .min_t_hdsta_sleep_us = min_t_hdsta_sleep_us,
         .min_t_susta_sleep_us = min_t_susta_sleep_us,
         .min_t_susto_sleep_us = min_t_susto_sleep_us,
-        .min_t_buf_sleep_us = min_t_buf_sleep_us
-    };
+        .min_t_buf_sleep_us = min_t_buf_sleep_us};
 
     return configs;
 }

@@ -81,7 +81,7 @@ int scan_bus_i2c(int *address_book);
 int write_i2c(unsigned int device_address, unsigned int register_address,
               int *data, unsigned int n_bytes);
 int read_i2c(unsigned int device_address, unsigned int register_address,
-             int *data, unsigned int n_bytes);
+             int *data, unsigned int n_bytes, int setRegisterBool);
 int reset_i2c(void);
 struct pi_i2c_statistics get_statistics_i2c(void);
 struct pi_i2c_configs get_configs_i2c(void);
