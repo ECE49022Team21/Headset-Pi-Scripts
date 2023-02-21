@@ -137,7 +137,7 @@ int main()
     // execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
     // printf("Execution Time: %f\n", execution_time);
 
-    for (int i = 0; i < 8000; i++)
+    for (int i = 0; i < 8000 * recordSeconds; i++)
     {
         audioValues[i] = GetAudioValue(rawValues[i]);
         printf("Audio Value: %f\n", audioValues[i]);
