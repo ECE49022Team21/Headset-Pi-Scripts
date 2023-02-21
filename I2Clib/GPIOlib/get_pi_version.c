@@ -213,6 +213,12 @@ static struct pi_version_struct pi_version[] = {
         .revision_string = "c03111",
         .version = 4
     },
+
+    // PI 4
+    {
+        .revision_string = "d03115",
+        .version = 4
+    },
 };
 
 // Get Raspberry PI board version
