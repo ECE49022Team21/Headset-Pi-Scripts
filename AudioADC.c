@@ -6,6 +6,7 @@
 #include "./I2Clib/pi_i2c.h"
 #include "./I2Clib/GPIOlib/get_pi_version.h" // Determines PI versions
 
+//ADC Constants
 const int ADC_Address = 0x54;
 const int Reg_Conversion_Result = 0b000;
 const int Reg_Alert_Status = 0b001;
@@ -15,6 +16,11 @@ const int Reg_High_Limit = 0b100;
 const int Reg_Hysteresis = 0b101;
 const int Reg_Lowest_Conversion = 0b110;
 const int Reg_Highest_Conversion = 0b111;
+
+//DAC Constants
+const int DAC_Address = 0x60;
+const int Reg_Dac_Output = 0x000;
+
 
 double avgReadTime;
 
@@ -37,25 +43,33 @@ int Scan_I2C_Bus()
         return -1;
     }
 
+    // Check and see if DAC was detected on the bus
+    if (address_book[DAC_Address] != 1)
+    {
+        printf("DAC was not detected at 0x%X\n", DAC_Address);
+        return -1;
+    }
+
     printf("ADC was detected at 0x%X\n", ADC_Address);
+    printf("DAC was detected at 0x%X\n", DAC_Address);
 
     return 0;
 }
 
-void Write(int register_address, int *data, int n_bytes)
+void Write(int deviceAddress, int register_address, int *data, int n_bytes)
 {
-    int ret = write_i2c(ADC_Address, register_address, data, n_bytes);
+    int ret = write_i2c(deviceAddress, register_address, data, n_bytes);
     if (ret < 0)
         printf("Error! i2c write returned error code: %d\n\n", ret);
 }
 
-void Read(int register_address, int *data, int n_bytes, int setRegisterBool)
+void Read(int deviceAddress, int register_address, int *data, int n_bytes, int setRegisterBool)
 {
     for (int i = 0; i < n_bytes; i++)
     {
         data[i] = 0;
     }
-    int ret = read_i2c(ADC_Address, register_address, data, n_bytes, setRegisterBool);
+    int ret = read_i2c(deviceAddress, register_address, data, n_bytes, setRegisterBool);
     if (ret < 0)
         printf("Error! i2c read returned error code: %d\n\n", ret);
 }
@@ -64,7 +78,12 @@ void ConfigureADC()
 {
     int data[1] = {0b01000000};
     int n_bytes = 1;
-    Write(Reg_Configuration, data, n_bytes);
+    Write(ADC_Address, Reg_Configuration, data, n_bytes);
+
+    // set ADC register address with a read
+    int data[2];
+    int n_bytes = 2;
+    Read(ADC_Address, Reg_Conversion_Result, data, n_bytes, 1);
 }
 
 float GetAudioValue(int rawValue)
@@ -74,12 +93,48 @@ float GetAudioValue(int rawValue)
     return audio;
 }
 
-int GetRawValue()
+int GetRawAudioValue()
 {
     int data[2];
     int n_bytes = 2;
-    Read(Reg_Conversion_Result, data, n_bytes, 0);
+    Read(ADC_Address, Reg_Conversion_Result, data, n_bytes, 0);
     return ((data[0] << 8) | data[1]);
+}
+
+int* RecordAudio(int seconds)
+{
+    clock_t start, end;
+    double execution_time;
+    float audioValues[8000 * seconds];
+    int rawValues[8000 * seconds];
+    start = clock();
+    for (int i = 0; i < 8000 * seconds; i++)
+    {
+        rawValues[i] = GetRawAudioValue();
+    }
+    end = clock();
+    execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+    float sampleRate = (8000 * seconds) / execution_time;
+    printf("Sample Rate: %f\n", sampleRate);
+
+    for (int i = 0; i < 8000 * seconds; i++)
+    {
+        audioValues[i] = GetAudioValue(rawValues[i]);
+        printf("Audio Value: %f\n", audioValues[i]);
+    }
+
+    return audioValues;
+}
+
+void PlayAudio(int* audioValues)
+{
+    for (int i = 0; i < (sizeof(audioValues) / sizeof(int)); i++)
+    {
+        int data[2];
+        data[1] = 0b11111111 & audioValues[i];
+        data[0] = 0b1111 & (audioValues[i] >> 8);
+        Write(DAC_Address, Reg_Dac_Output, data, 2);
+    }
 }
 
 int main()
@@ -112,36 +167,9 @@ int main()
         return EXIT_FAILURE;
 
     ConfigureADC();
-
-    // set register address with a read
-    int data[2];
-    int n_bytes = 2;
-    Read(Reg_Conversion_Result, data, n_bytes, 1);
-
     printf("ADC Configured\n");
     
-    int recordSeconds = 5;
-    avgReadTime = 91.252389 / 800000;
-    double uSleepTime = (0.000125 - avgReadTime) * 1000000;
-    // clock_t start, end;
-    double execution_time;
-    float audioValues[8000 * recordSeconds];
-    int rawValues[8000 * recordSeconds];
-    // start = clock();
-    for (int i = 0; i < 8000 * recordSeconds; i++)
-    {
-        rawValues[i] = GetRawValue();
-        //usleep(uSleepTime);
-    }
-    // end = clock();
-    // execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    // printf("Execution Time: %f\n", execution_time);
-
-    for (int i = 0; i < 8000 * recordSeconds; i++)
-    {
-        audioValues[i] = GetAudioValue(rawValues[i]);
-        printf("Audio Value: %f\n", audioValues[i]);
-    }
+    int *audioValues = RecordAudio(5);
 
     // Open file:
     FILE *fd = fopen("./audioOut.binary", "w");
@@ -151,4 +179,6 @@ int main()
 
     // Close file:
     fclose(fd);
+
+    PlayAudio(audioValues);
 }
