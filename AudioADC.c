@@ -82,7 +82,7 @@ int main()
     int sda_pin = 2;
     int scl_pin = 3;
 
-    int speed_grade = 100000000;
+    int speed_grade = I2C_FULL_SPEED;
     printf("I2C Clock Speed: %d Hz\n", speed_grade);
 
     //Display pi Version
@@ -103,14 +103,14 @@ int main()
     ConfigureADC();
     printf("ADC Configured\n");
 
-    float audioValues[16000];
-    int rawValues[16000];
-    for (int i = 0; i < 16000; i++)
+    float audioValues[8000];
+    int rawValues[8000];
+    for (int i = 0; i < 8000; i++)
     {
         rawValues[i] = GetRawValue();
     }
 
-    for (int i = 0; i < 16000; i++)
+    for (int i = 0; i < 8000; i++)
     {
         audioValues[i] = GetAudioValue(rawValues[i]);
         printf("Audio Value: %f\n", audioValues[i]);
