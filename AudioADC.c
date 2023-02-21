@@ -82,7 +82,7 @@ int main()
     int sda_pin = 2;
     int scl_pin = 3;
 
-    int speed_grade = I2C_FULL_SPEED;
+    int speed_grade = 100000000;
     printf("I2C Clock Speed: %d Hz\n", speed_grade);
 
     //Display pi Version
