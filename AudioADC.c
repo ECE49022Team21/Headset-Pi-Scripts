@@ -60,7 +60,7 @@ void ConfigureADC()
 
 float GetAudioValue(int rawValue)
 {
-    voltageStep = (rawValue >> 2) & 0b1111111111;
+    int voltageStep = (rawValue >> 2) & 0b1111111111;
     float audio = (((float)2 / 1024) * voltageStep) - 1;
     return audio;
 }
@@ -112,7 +112,7 @@ int main()
 
     for (int i = 0; i < 16000; i++)
     {
-        audioValues[i] = GetAudioValue();
+        audioValues[i] = GetAudioValue(rawValues[i]);
         printf("Audio Value: %f\n", audioValues[i]);
     }
 
