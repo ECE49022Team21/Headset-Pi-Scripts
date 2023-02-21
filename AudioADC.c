@@ -81,8 +81,6 @@ void ConfigureADC()
     Write(ADC_Address, Reg_Configuration, data, n_bytes);
 
     // set ADC register address with a read
-    int data[2];
-    int n_bytes = 2;
     Read(ADC_Address, Reg_Conversion_Result, data, n_bytes, 1);
 }
 
