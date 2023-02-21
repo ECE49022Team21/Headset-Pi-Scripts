@@ -103,7 +103,7 @@ int main()
     for (int i = 0; i < 16000*5; i++)
     {
         float audioValue = GetAudioValue();
-        printf("Audio Value: %f\n", audioValue);
+        //printf("Audio Value: %f\n", audioValue);
         x[i] = audioValue;
         usleep(62.5);
     }
