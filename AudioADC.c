@@ -119,15 +119,16 @@ int main()
     Read(Reg_Conversion_Result, data, n_bytes, 1);
 
     printf("ADC Configured\n");
-
+    
+    int recordSeconds = 5;
     avgReadTime = 91.252389 / 800000;
     double uSleepTime = (0.000125 - avgReadTime) * 1000000;
     // clock_t start, end;
     double execution_time;
-    float audioValues[8000];
-    int rawValues[8000];
+    float audioValues[8000 * recordSeconds];
+    int rawValues[8000 * recordSeconds];
     // start = clock();
-    for (int i = 0; i < 8000; i++)
+    for (int i = 0; i < 8000 * recordSeconds; i++)
     {
         rawValues[i] = GetRawValue();
         usleep(uSleepTime);
