@@ -131,7 +131,7 @@ int main()
     for (int i = 0; i < 8000 * recordSeconds; i++)
     {
         rawValues[i] = GetRawValue();
-        usleep(uSleepTime);
+        //usleep(uSleepTime);
     }
     // end = clock();
     // execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
