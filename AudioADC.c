@@ -16,6 +16,8 @@ const int Reg_Hysteresis = 0b101;
 const int Reg_Lowest_Conversion = 0b110;
 const int Reg_Highest_Conversion = 0b111;
 
+double avgReadTime;
+
 int Scan_I2C_Bus()
 {
     int address_book[127];
@@ -118,6 +120,8 @@ int main()
 
     printf("ADC Configured\n");
 
+    avgReadTime = 91.252389 / 800000;
+    double uSleepTime = (0.000125 - avgReadTime) * 1000000;
     clock_t start, end;
     double execution_time;
     float audioValues[8000];
@@ -128,6 +132,7 @@ int main()
         for (int i = 0; i < 8000; i++)
         {
             rawValues[i] = GetRawValue();
+            usleep(uSleepTime);
         }
     }
     end = clock();
