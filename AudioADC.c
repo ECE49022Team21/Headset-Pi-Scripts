@@ -227,7 +227,7 @@ int main()
     FILE *fd = fopen("./audioOut.binary", "w");
 
     // Write file:
-    fwrite(audioValues, sizeof(float), 8000*5, fd);
+    //fwrite(audioValues, sizeof(float), 8000*5, fd);
 
     // Close file:
     fclose(fd);
