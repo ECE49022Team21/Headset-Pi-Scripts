@@ -124,6 +124,38 @@ float* RecordAudio(int seconds)
     return audioValues;
 }
 
+void CleanAudio(float* audioValues, int numSamples)
+{
+    //remove dc offset
+    float mean;
+    for (int i = 0; i < numSamples; i++)
+    {
+        mean += audioValues[i];
+    }
+    mean = mean / numSamples;
+
+    //get the max absolute value of the audiovalues
+    float max = 0;
+    for (int i = 0; i < numSamples; i++)
+    {
+        audioValues[i] = audioValues[i] - mean;;
+        if (audioValues[i] > 0 && audioValues[i] > max)
+        {
+            max = audioValues[i];
+        }
+        else if (audioValues[i] < 0 && audioValues[i] < max)
+        {
+           max = -audioValues[i]; 
+        }
+    }
+
+    //make the loudest value = 1
+    for (int i = 0; i < numSamples; i++)
+    {
+        audioValues[i] = audioValues[i] * (1 / max);
+    }
+}
+
 void PlayAudio(float* audioValues, int numSamples)
 {
     int rawAudioValues[numSamples];
@@ -176,6 +208,9 @@ int main()
     
     printf("Recording Audio\n");
     float *audioValues = RecordAudio(5);
+
+    printf("Cleaning Audio");
+    CleanAudio(audioValues, 5 * 8000);
 
     // Open file:
     FILE *fd = fopen("./audioOut.binary", "w");
