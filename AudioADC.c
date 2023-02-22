@@ -209,17 +209,22 @@ int main()
     printf("Recording Audio\n");
     float *audioValues = RecordAudio(5);
 
-    printf("Cleaning Audio");
+    printf("Cleaning Audio\n");
     CleanAudio(audioValues, 5 * 8000);
 
     // Open file:
     FILE *fd = fopen("./audioOut.binary", "w");
 
     // Write file:
-    fwrite(&audioValues, sizeof(audioValues), 1, fd);
+    //fwrite(&audioValues, sizeof(audioValues), 1, fd);
+
+    //Read file:
+    fread(audioValues, sizeof(float), 8000*5, fd);
 
     // Close file:
     fclose(fd);
+
+    
 
     printf("Playing Audio\n");
     PlayAudio(audioValues, 8000 * 5);
