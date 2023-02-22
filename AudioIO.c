@@ -220,7 +220,7 @@ int main()
     int sda_pin = 2;
     int scl_pin = 3;
 
-    int speed_grade = I2C_FULL_SPEED;
+    int speed_grade = I2C_FULL_SPEED; //requires no less than 400kHz to reach min sampling rate of 8kHz
     printf("I2C Clock Speed: %d Hz\n", speed_grade);
 
     // Display pi Version

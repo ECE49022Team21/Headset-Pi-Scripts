@@ -7,7 +7,7 @@ Scripts for the headset subsystem that handle: Audio Input, Audio Output, and Sp
 ### Dependencies
 
 * Raspberry Pi
-* https://github.com/besp9510/pi_i2c
+* https://github.com/besp9510/pi_i2c     <--------------   Has been edited for specific use with this project
 * https://github.com/besp9510/pi_lw_gpio
 * https://github.com/besp9510/pi_microsleep_hard
 
