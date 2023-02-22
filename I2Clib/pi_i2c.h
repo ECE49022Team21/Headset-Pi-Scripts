@@ -80,6 +80,7 @@ int config_i2c(unsigned int sda, unsigned int scl, unsigned int speed_grade);
 int scan_bus_i2c(int *address_book);
 int write_i2c(unsigned int device_address, unsigned int register_address,
               int *data, unsigned int n_bytes);
+int write_i2c_no_register(unsigned int device_address, int *data, unsigned int n_bytes);
 int read_i2c(unsigned int device_address, unsigned int register_address,
              int *data, unsigned int n_bytes, int setRegisterBool);
 int reset_i2c(void);

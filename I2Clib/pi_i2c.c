@@ -355,6 +355,99 @@ int write_i2c(unsigned int device_address, unsigned int register_address,
     return write_status;
 }
 
+// Write N number of bytes to device
+int write_i2c_no_register(unsigned int device_address,
+              int *data, unsigned int n_bytes)
+{
+    // Definitions:
+    int write_status;
+    int i;
+    int ret;
+
+    // Check if I2C has been configured for use; otherwise bail as important
+    // timings are not yet defined:
+    if (!config_i2c_flag)
+    {
+        return -EI2CNOTCFG;
+    }
+
+    // Only 7-bit addressing is supported:
+    if (device_address > 0x7F)
+    {
+        return -EINVAL;
+    }
+
+    // Zero makes no sense caller:
+    if (n_bytes == 0)
+    {
+        return -EINVAL;
+    }
+
+    // Get bus into known state by using STOP condition:
+    if ((ret = write_stop_condition_to_bus()) < 0)
+    {
+        return ret;
+    }
+
+    // Make bus busy with START condition so devices know to expect message:
+    if ((ret = write_start_condition_to_bus()) < 0)
+    {
+        return ret;
+    }
+
+    // Write address frame to bus and begin message with the device:
+    write_status = write_address_frame_to_bus(device_address, WRITE_FLAG);
+
+    if (write_status == NACK)
+    {
+        // In case a STOP condition cannot be written and bus
+        // encounters an error
+        if ((ret = write_stop_condition_to_bus()) < 0)
+        {
+            return ret;
+        }
+        // Keep track of statistics for any caller interested in those
+        // kind of numbers:
+        statistics.num_nack++;
+
+        return -ENACK;
+    }
+
+    // Write data to specified register:
+    for (i = 0; i < n_bytes; i++)
+    {
+        write_status = write_data_frame_to_bus(data[i]);
+
+        // Consider a NACK during data transfer to be a bad transfer; device
+        // stopped responding to write for some reason:
+        if (write_status == NACK)
+        {
+            // In case a STOP condition cannot be written and bus
+            // encounters an error
+            if ((ret = write_stop_condition_to_bus()) < 0)
+            {
+                return ret;
+            }
+            // Keep track of statistics for any caller interested in those
+            // kind of numbers:
+            statistics.num_badxfr++;
+
+            return -EBADXFR;
+        }
+        // Keep track of statistics for any caller interested in those
+        // kind of numbers:
+        statistics.num_bytes_written++;
+    }
+
+    // Complete message by transition the bus to IDLE:
+    if ((ret = write_stop_condition_to_bus()) < 0)
+    {
+        return ret;
+    }
+
+    return write_status;
+}
+
 // Scan bus for devices (only supporting 7-bit addressing)
 int scan_bus_i2c(int *address_book)
 {

@@ -63,6 +63,13 @@ void Write(int deviceAddress, int register_address, int *data, int n_bytes)
         printf("Error! i2c write returned error code: %d\n\n", ret);
 }
 
+void WriteNoReg(int deviceAddress, int *data, int n_bytes)
+{
+    int ret = write_i2c_no_register(deviceAddress, data, n_bytes);
+    if (ret < 0)
+        printf("Error! i2c write returned error code: %d\n\n", ret);
+}
+
 void Read(int deviceAddress, int register_address, int *data, int n_bytes, int setRegisterBool)
 {
     for (int i = 0; i < n_bytes; i++)
@@ -170,7 +177,7 @@ void PlayAudio(float* audioValues, int numSamples)
         int data[2];
         data[1] = 0b11111111 & rawAudioValues[i];
         data[0] = 0b1111 & (rawAudioValues[i] >> 8);
-        Write(DAC_Address, Reg_Dac_Output, data, 2);
+        WriteNoReg(DAC_Address, data, 2);
     }
 }
 
