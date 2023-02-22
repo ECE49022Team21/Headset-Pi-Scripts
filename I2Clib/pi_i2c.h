@@ -21,6 +21,8 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 // ============================================================================
 
+#include <stdbool.h>
+
 // I2C speed grades define in bits/second:
 #define I2C_STANDARD_MODE 100e3
 #define I2C_FULL_SPEED 400e3
@@ -78,11 +80,9 @@ struct pi_i2c_configs {
 // I2C function prototypes:
 int config_i2c(unsigned int sda, unsigned int scl, unsigned int speed_grade);
 int scan_bus_i2c(int *address_book);
-int write_i2c(unsigned int device_address, unsigned int register_address,
-              int *data, unsigned int n_bytes);
+int write_i2c(unsigned int device_address, unsigned int register_address,int *data, unsigned int n_bytes);
 int write_i2c_no_register(unsigned int device_address, int *data, unsigned int n_bytes);
-int read_i2c(unsigned int device_address, unsigned int register_address,
-             int *data, unsigned int n_bytes, int setRegisterBool);
+int read_i2c(unsigned int device_address, unsigned int register_address,int *data, unsigned int n_bytes, bool setRegister);
 int reset_i2c(void);
 struct pi_i2c_statistics get_statistics_i2c(void);
 struct pi_i2c_configs get_configs_i2c(void);

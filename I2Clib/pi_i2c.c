@@ -75,6 +75,7 @@
 // Include C standard libraries:
 #include <time.h>  // C Standard get and manipulate time library
 #include <errno.h> // C Standard for error conditions
+#include <stdbool.h>
 
 // Include header files:
 #include "pi_i2c.h"                             // Speed grade, macros, and outward
@@ -90,7 +91,7 @@
 
 // Read N number of bytes from the specified register address of a device
 int read_i2c(unsigned int device_address, unsigned int register_address,
-             int *data, unsigned int n_bytes, int setRegisterBool)
+             int *data, unsigned int n_bytes, bool setRegister)
 {
     // Definitions:
     int byte;
@@ -139,7 +140,7 @@ int read_i2c(unsigned int device_address, unsigned int register_address,
         return ret;
     }
 
-    if (setRegisterBool == 1)
+    if (setRegister)
     {
         // Write address frame to bus and begin message with device:
         write_status = write_address_frame_to_bus(device_address, WRITE_FLAG);

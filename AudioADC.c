@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include "./I2Clib/pi_i2c.h"
 #include "./I2Clib/GPIOlib/get_pi_version.h" // Determines PI versions
@@ -70,13 +71,13 @@ void WriteNoReg(int deviceAddress, int *data, int n_bytes)
         printf("Error! i2c write returned error code: %d\n\n", ret);
 }
 
-void Read(int deviceAddress, int register_address, int *data, int n_bytes, int setRegisterBool)
+void Read(int deviceAddress, int register_address, int *data, int n_bytes, bool setRegister)
 {
     for (int i = 0; i < n_bytes; i++)
     {
         data[i] = 0;
     }
-    int ret = read_i2c(deviceAddress, register_address, data, n_bytes, setRegisterBool);
+    int ret = read_i2c(deviceAddress, register_address, data, n_bytes, setRegister);
     if (ret < 0)
         printf("Error! i2c read returned error code: %d\n\n", ret);
 }
@@ -88,7 +89,7 @@ void ConfigureADC()
     Write(ADC_Address, Reg_Configuration, data, n_bytes);
 
     // set ADC register address with a read
-    Read(ADC_Address, Reg_Conversion_Result, data, n_bytes, 1);
+    Read(ADC_Address, Reg_Conversion_Result, data, n_bytes, true);
 }
 
 float GetAudioValue(int rawValue)
@@ -102,7 +103,7 @@ int GetRawAudioValue()
 {
     int data[2];
     int n_bytes = 2;
-    Read(ADC_Address, Reg_Conversion_Result, data, n_bytes, 0);
+    Read(ADC_Address, Reg_Conversion_Result, data, n_bytes, false);
     return ((data[0] << 8) | data[1]);
 }
 
@@ -110,22 +111,22 @@ void RecordAudio(float* audioValues, int numSamples)
 {
     clock_t start, end;
     double execution_time;
-    int rawValues[8000 * numSamples];
+    int rawValues[numSamples];
     start = clock();
-    for (int i = 0; i < 8000 * numSamples; i++)
+    for (int i = 0; i < numSamples; i++)
     {
         rawValues[i] = GetRawAudioValue();
     }
     end = clock();
     execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    float sampleRate = (8000 * numSamples) / execution_time;
+    float sampleRate = (numSamples) / execution_time;
 
-    for (int i = 0; i < 8000 * numSamples; i++)
+    for (int i = 0; i < numSamples; i++)
     {
         audioValues[i] = GetAudioValue(rawValues[i]);
         printf("Audio Value: %f\n", audioValues[i]);
     }
-    printf("Sample Rate: %f\n", sampleRate);
+    printf("Recored with Sample Rate: %f\n", sampleRate);
 }
 
 void CleanAudio(float* audioValues, int numSamples)
@@ -142,12 +143,12 @@ void CleanAudio(float* audioValues, int numSamples)
     float max = 0;
     for (int i = 0; i < numSamples; i++)
     {
-        audioValues[i] = audioValues[i] - mean;;
+        audioValues[i] = audioValues[i] - mean;
         if (audioValues[i] > 0 && audioValues[i] > max)
         {
             max = audioValues[i];
         }
-        else if (audioValues[i] < 0 && audioValues[i] < max)
+        else if (audioValues[i] < 0 && (-audioValues[i]) > max)
         {
            max = -audioValues[i]; 
         }
@@ -181,7 +182,33 @@ void PlayAudio(float* audioValues, int numSamples)
     }
     end = clock();
     execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("Played for %f seconds", execution_time);
+    float sampleRate = (numSamples) / execution_time;
+    
+    printf("Recored with Sample Rate: %f\n", sampleRate);
+}
+
+void WriteAudioBinary(char* fileName, float* audioValues, int numSamples)
+{
+    // Open file:
+    FILE *fd = fopen(("./%s", fileName), "w");
+
+    // Write file:
+    fwrite(audioValues, sizeof(float), numSamples, fd);
+
+    // Close file:
+    fclose(fd);
+}
+
+void ReadAudioBinary(char* fileName, float* audioValues, int numSamples)
+{
+    // Open file:
+    FILE *fd = fopen(("./%s", fileName), "r");
+
+    //Read file:
+    fread(audioValues, sizeof(float), numSamples, fd);
+
+    // Close file:
+    fclose(fd);
 }
 
 int main()
@@ -217,37 +244,17 @@ int main()
     printf("ADC Configured\n");
     
     printf("Recording Audio\n");
-    float *audioValues = malloc(sizeof(float) * 5 * 8000);
-    RecordAudio(audioValues, 5);
+    int secondsToRecord = 5;
+    int estimatedSampleRate = 8000;
+    int numSamples = secondsToRecord * estimatedSampleRate;
+    float *audioValues = malloc(sizeof(float) * numSamples);
+    RecordAudio(audioValues, numSamples);
 
     printf("Cleaning Audio\n");
-    CleanAudio(audioValues, 5 * 8000);
-
-    // Open file:
-    FILE *fd = fopen("./audioOut.binary", "w");
-
-    // Write file:
-    //fwrite(audioValues, sizeof(float), 8000*5, fd);
-
-    // Close file:
-    fclose(fd);
-
-
-
-
-
-    // Open file:
-    fd = fopen("./audioOut.binary", "r");
-
-    //Read file:
-    fread(audioValues, sizeof(float), 8000*5, fd);
-
-    // Close file:
-    fclose(fd);
-    
+    CleanAudio(audioValues, numSamples);
 
     printf("Playing Audio\n");
-    PlayAudio(audioValues, 8000 * 5);
+    PlayAudio(audioValues, numSamples);
 
     free(audioValues);
 }
