@@ -106,29 +106,26 @@ int GetRawAudioValue()
     return ((data[0] << 8) | data[1]);
 }
 
-float* RecordAudio(int seconds)
+void RecordAudio(float* audioValues, int numSamples)
 {
     clock_t start, end;
     double execution_time;
-    float *audioValues = malloc(8000 * seconds * sizeof(float));
-    int rawValues[8000 * seconds];
+    int rawValues[8000 * numSamples];
     start = clock();
-    for (int i = 0; i < 8000 * seconds; i++)
+    for (int i = 0; i < 8000 * numSamples; i++)
     {
         rawValues[i] = GetRawAudioValue();
     }
     end = clock();
     execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    float sampleRate = (8000 * seconds) / execution_time;
+    float sampleRate = (8000 * numSamples) / execution_time;
 
-    for (int i = 0; i < 8000 * seconds; i++)
+    for (int i = 0; i < 8000 * numSamples; i++)
     {
         audioValues[i] = GetAudioValue(rawValues[i]);
         printf("Audio Value: %f\n", audioValues[i]);
     }
     printf("Sample Rate: %f\n", sampleRate);
-
-    return audioValues;
 }
 
 void CleanAudio(float* audioValues, int numSamples)
@@ -220,7 +217,8 @@ int main()
     printf("ADC Configured\n");
     
     printf("Recording Audio\n");
-    float *audioValues = RecordAudio(5);
+    float *audioValues = malloc(sizeof(float) * 5 * 8000);
+    RecordAudio(audioValues, 5);
 
     printf("Cleaning Audio\n");
     CleanAudio(audioValues, 5 * 8000);
@@ -229,7 +227,7 @@ int main()
     FILE *fd = fopen("./audioOut.binary", "w");
 
     // Write file:
-    fwrite(&audioValues, sizeof(float), 8000*5, fd);
+    fwrite(audioValues, sizeof(float), 8000*5, fd);
 
     // Close file:
     fclose(fd);
@@ -242,7 +240,7 @@ int main()
     fd = fopen("./audioOut.binary", "r");
 
     //Read file:
-    fread(&audioValues, sizeof(float), 8000*5, fd);
+    fread(audioValues, sizeof(float), 8000*5, fd);
 
     // Close file:
     fclose(fd);
