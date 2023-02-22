@@ -126,6 +126,7 @@ float* RecordAudio(int seconds)
 
 void PlayAudio(float* audioValues)
 {
+    printf("%d\n", sizeof(audioValues) / sizeof(float));
     int rawAudioValues[sizeof(audioValues) / sizeof(float)];
 
     for (int i = 0; i < (sizeof(audioValues) / sizeof(float)); i++)
