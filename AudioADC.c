@@ -231,12 +231,21 @@ int main()
     // Write file:
     fwrite(&audioValues, sizeof(audioValues), 1, fd);
 
-    //Read file:
-    fread(audioValues, sizeof(float), 8000*5, fd);
-
     // Close file:
     fclose(fd);
 
+
+
+
+
+    // Open file:
+    fd = fopen("./audioOut.binary", "r");
+
+    //Read file:
+    fread(&audioValues, sizeof(float), 8000*5, fd);
+
+    // Close file:
+    fclose(fd);
     
 
     printf("Playing Audio\n");
