@@ -124,17 +124,16 @@ float* RecordAudio(int seconds)
     return audioValues;
 }
 
-void PlayAudio(float* audioValues)
+void PlayAudio(float* audioValues, int numSamples)
 {
-    printf("%d\n", sizeof(audioValues) / sizeof(float));
-    int rawAudioValues[sizeof(audioValues) / sizeof(float)];
+    int rawAudioValues[numSamples];
 
-    for (int i = 0; i < (sizeof(audioValues) / sizeof(float)); i++)
+    for (int i = 0; i < numSamples; i++)
     {
         rawAudioValues[i] = ((audioValues[i] + 1) * 4096) / 2;
     }
 
-    for (int i = 0; i < (sizeof(audioValues) / sizeof(float)); i++)
+    for (int i = 0; i < numSamples; i++)
     {
         int data[2];
         data[1] = 0b11111111 & rawAudioValues[i];
@@ -188,7 +187,7 @@ int main()
     fclose(fd);
 
     printf("Playing Audio\n");
-    PlayAudio(audioValues);
+    PlayAudio(audioValues, 8000 * 5);
 
     free(audioValues);
 }
