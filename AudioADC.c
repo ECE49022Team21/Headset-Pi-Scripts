@@ -229,7 +229,7 @@ int main()
     FILE *fd = fopen("./audioOut.binary", "w");
 
     // Write file:
-    //fwrite(&audioValues, sizeof(audioValues), 1, fd);
+    fwrite(&audioValues, sizeof(audioValues), 1, fd);
 
     //Read file:
     fread(audioValues, sizeof(float), 8000*5, fd);
