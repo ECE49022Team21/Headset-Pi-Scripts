@@ -120,13 +120,13 @@ float* RecordAudio(int seconds)
     end = clock();
     execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
     float sampleRate = (8000 * seconds) / execution_time;
-    printf("Sample Rate: %f\n", sampleRate);
 
     for (int i = 0; i < 8000 * seconds; i++)
     {
         audioValues[i] = GetAudioValue(rawValues[i]);
         printf("Audio Value: %f\n", audioValues[i]);
     }
+    printf("Sample Rate: %f\n", sampleRate);
 
     return audioValues;
 }
@@ -172,6 +172,9 @@ void PlayAudio(float* audioValues, int numSamples)
         rawAudioValues[i] = ((audioValues[i] + 1) * 4096) / 2;
     }
 
+    clock_t start, end;
+    double execution_time;
+    start = clock();
     for (int i = 0; i < numSamples; i++)
     {
         int data[2];
@@ -179,6 +182,9 @@ void PlayAudio(float* audioValues, int numSamples)
         data[0] = 0b1111 & (rawAudioValues[i] >> 8);
         WriteNoReg(DAC_Address, data, 2);
     }
+    end = clock();
+    execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Played for %f seconds", execution_time);
 }
 
 int main()
