@@ -78,6 +78,7 @@ namespace SpeechToTextAgent
                 writer.WriteSample(audioValue/10);
             }
             writer.Flush();
+            writer.Dispose();
         }
     }
 }

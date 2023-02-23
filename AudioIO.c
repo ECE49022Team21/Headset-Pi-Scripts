@@ -278,7 +278,7 @@ int main()
     GetTextFromAudio();
 
     printf("Reading Binary\n");
-    ReadAudioBinary("audioOut.b", audioValues, numSamples);
+    ReadAudioBinary("audioTest.b", audioValues, numSamples);
 
     printf("Playing Audio\n");
     PlayAudio(audioValues, numSamples);
