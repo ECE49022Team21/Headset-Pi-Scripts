@@ -186,7 +186,7 @@ void PlayAudio(float* audioValues, int numSamples)
 
     //Set Output to zero
     int data[2];
-    data[1] = 0;
+    data[1] = 0b1;
     data[2] = 0;
     WriteNoReg(DAC_Address, data, 2);
     
@@ -254,9 +254,12 @@ int main()
     ConfigureADC();
     printf("ADC Configured\n");
 
-    float zero = 0;
-    PlayAudio(&zero, 1);
-    printf("DAC Configured");
+    //Set Output to zero
+    int data[2];
+    data[1] = 0b1;
+    data[2] = 0;
+    WriteNoReg(DAC_Address, data, 2);
+    printf("DAC Configured\n");
     
     printf("Recording Audio\n");
     int secondsToRecord = 5;
