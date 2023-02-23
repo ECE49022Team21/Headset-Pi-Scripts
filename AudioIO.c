@@ -259,10 +259,13 @@ int main()
     CleanAudio(audioValues, numSamples);
 
     printf("Writing Binary\n");
-    WriteAudioBinary("audioOut.b", audioValues, numSamples);
+    //WriteAudioBinary("audioOut.b", audioValues, numSamples);
 
     printf("Coverting Audio To Text\n");
     GetTextFromAudio();
+
+    printf("Reading Binary\n");
+    ReadAudioBinary("audioOut.b", audioValues, numSamples);
 
     printf("Playing Audio\n");
     PlayAudio(audioValues, numSamples);
