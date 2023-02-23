@@ -272,7 +272,7 @@ int main()
     CleanAudio(audioValues, numSamples);
 
     printf("Writing Binary\n");
-    //WriteAudioBinary("audioOut.b", audioValues, numSamples);
+    WriteAudioBinary("audioOut.b", audioValues, numSamples);
 
     printf("Coverting Audio To Text\n");
     GetTextFromAudio();
