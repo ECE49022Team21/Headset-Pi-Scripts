@@ -211,6 +211,11 @@ void ReadAudioBinary(char* fileName, float* audioValues, int numSamples)
     fclose(fd);
 }
 
+void GetTextFromAudio()
+{
+    
+}
+
 int main()
 {
     printf("Initializing Audio Collection\n");
@@ -252,6 +257,12 @@ int main()
 
     printf("Cleaning Audio\n");
     CleanAudio(audioValues, numSamples);
+
+    printf("Writing Binary\n");
+    WriteAudioBinary("audioOut.b", audioValues, numSamples);
+
+    printf("Coverting Audio To Text\n");
+    GetTextFromAudio();
 
     printf("Playing Audio\n");
     PlayAudio(audioValues, numSamples);
