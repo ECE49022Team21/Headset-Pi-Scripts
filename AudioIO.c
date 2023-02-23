@@ -186,8 +186,8 @@ void PlayAudio(float* audioValues, int numSamples)
 
     //Set Output to zero
     int data[2];
-    data[1] = 0b1;
-    data[2] = 0;
+    data[0] = 0;
+    data[1] = 0;
     WriteNoReg(DAC_Address, data, 2);
     
     printf("Played with Sample Rate: %f\n", sampleRate);
@@ -256,8 +256,8 @@ int main()
 
     //Set Output to zero
     int data[2];
-    data[1] = 0b1;
-    data[2] = 0;
+    data[1] = 0;
+    data[0] = 0;
     WriteNoReg(DAC_Address, data, 2);
     printf("DAC Configured\n");
     
