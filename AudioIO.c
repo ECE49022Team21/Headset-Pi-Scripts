@@ -183,8 +183,14 @@ void PlayAudio(float* audioValues, int numSamples)
     end = clock();
     execution_time = ((double)(end - start)) / CLOCKS_PER_SEC;
     float sampleRate = (numSamples) / execution_time;
+
+    //Set Output to zero
+    int data[2];
+    data[1] = 0;
+    data[2] = 0;
+    WriteNoReg(DAC_Address, data, 2);
     
-    printf("Recored with Sample Rate: %f\n", sampleRate);
+    printf("Played with Sample Rate: %f\n", sampleRate);
 }
 
 void WriteAudioBinary(char* fileName, float* audioValues, int numSamples)
@@ -247,6 +253,10 @@ int main()
 
     ConfigureADC();
     printf("ADC Configured\n");
+
+    float zero = 0;
+    PlayAudio(&zero, 1);
+    printf("DAC Configured");
     
     printf("Recording Audio\n");
     int secondsToRecord = 5;
