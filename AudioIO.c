@@ -124,7 +124,6 @@ void RecordAudio(float* audioValues, int numSamples)
     for (int i = 0; i < numSamples; i++)
     {
         audioValues[i] = GetAudioValue(rawValues[i]);
-        printf("Audio Value: %f\n", audioValues[i]);
     }
     printf("Recored with Sample Rate: %f\n", sampleRate);
 }
@@ -274,14 +273,21 @@ int main()
     printf("Writing Binary\n");
     WriteAudioBinary("audioOut.b", audioValues, numSamples);
 
+    printf("Playing Back Recorded Audio\n");
+    PlayAudio(audioValues, numSamples);
+
     printf("Coverting Audio To Text\n");
     GetTextFromAudio();
 
     printf("Reading Binary\n");
     ReadAudioBinary("audioTest.b", audioValues, numSamples);
 
-    printf("Playing Audio\n");
+    printf("Playing Audio Test\n");
     PlayAudio(audioValues, numSamples);
 
     free(audioValues);
+
+    //TODO
+    //encode numSamples into binary files as the first float (Important for playing audio)
+    //get text from google
 }
