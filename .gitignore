@@ -23,7 +23,6 @@
 *.lo
 
 # Shared objects (inc. Windows DLLs)
-*.dll
 *.so
 *.so.*
 *.dylib
@@ -40,7 +39,6 @@
 *.dSYM/
 *.su
 *.idb
-*.pdb
 
 # Kernel Module Compile Results
 *.mod*
