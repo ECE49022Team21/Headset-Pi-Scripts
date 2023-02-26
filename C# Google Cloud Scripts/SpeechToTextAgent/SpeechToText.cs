@@ -16,14 +16,15 @@ namespace SpeechToTextAgent
             int sampleRate = int.Parse(args[0]);
             string binaryPath = args[1];*/
 
-            string binaryPath = "/Users/ishaan/Desktop/ECE Senior Design/Headset Pi Scripts/C# Google Cloud Scripts/SpeechToTextAgent/audioOut.binary";
-            int sampleRate = 8000;
-            string wavPath = "/Users/ishaan/Desktop/ECE Senior Design/Headset Pi Scripts/C# Google Cloud Scripts/SpeechToTextAgent/audioOut.wav";
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "/Users/ishaan/Desktop/ECE Senior Design/Headset Pi Scripts/C# Google Cloud Scripts/SpeechToTextAgent/SECRET-senior-design-project-377818-3bb7983a6c1d.json");
+            string binaryPath = "../audioOut.b";
+            int sampleRate = 8750;
+            string wavPath = "../audioOut.wav";
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "../SECRET-GOOGLE-TOKEN.json");
 
             WriteWavFile(ReadBinaryFile(binaryPath), sampleRate, wavPath);
             string text = GetTextFromGoogle(wavPath, sampleRate);
             Console.WriteLine(text);
+            WriteTextToTxtFile(text, "../OutputText.txt");
         }
 
         static string GetTextFromGoogle(string filePath, int sampleRate)
@@ -79,6 +80,14 @@ namespace SpeechToTextAgent
             }
             writer.Flush();
             writer.Dispose();
+        }
+
+        static void WriteTextToTxtFile(string text, string outputPath)
+        {
+            StreamWriter fileWriter = File.CreateText(outputPath);
+            fileWriter.WriteLine(text);
+            fileWriter.Flush();
+            fileWriter.Dispose();
         }
     }
 }
