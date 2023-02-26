@@ -276,8 +276,8 @@ int main()
     printf("Playing Back Recorded Audio\n");
     PlayAudio(audioValues, numSamples);
 
-    //printf("Coverting Audio To Text\n");
-    //GetTextFromAudio();
+    printf("Coverting Audio To Text\n");
+    GetTextFromAudio();
 
     printf("Reading Binary\n");
     ReadAudioBinary("audioTest.b", audioValues, numSamples);
