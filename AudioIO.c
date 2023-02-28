@@ -218,7 +218,7 @@ void ReadAudioBinary(char* fileName, float* audioValues, int numSamples)
 
 void GetTextFromAudio()
 {
-    system("./C#Build/SpeechToTextAgent");
+    system("sudo ./C#Build/SpeechToTextAgent");
 }
 
 int main()
@@ -276,8 +276,8 @@ int main()
     printf("Playing Back Recorded Audio\n");
     PlayAudio(audioValues, numSamples);
 
-    //printf("Coverting Audio To Text\n");
-    //GetTextFromAudio();
+    printf("Coverting Audio To Text\n");
+    GetTextFromAudio();
 
     printf("Reading Binary\n");
     ReadAudioBinary("audioTest.b", audioValues, numSamples);
