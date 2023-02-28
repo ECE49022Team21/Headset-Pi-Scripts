@@ -8,6 +8,7 @@ using static Google.Cloud.Speech.V1.RecognitionConfig.Types;
 
 namespace SpeechToTextAgent
 {
+    //dotnet publish --runtime linux-arm --self-contained --framework net6.0
     class SpeechToText
     {
         static void Main(string[] args)
@@ -16,15 +17,15 @@ namespace SpeechToTextAgent
             int sampleRate = int.Parse(args[0]);
             string binaryPath = args[1];*/
 
-            string binaryPath = "../audioOut.b";
+            string binaryPath = "./audioOut.b";
             int sampleRate = 8750;
-            string wavPath = "../audioOut.wav";
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "../SECRET-GOOGLE-TOKEN.json");
+            string wavPath = "./audioOut.wav";
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "./SECRET-GOOGLE-TOKEN.json");
 
             WriteWavFile(ReadBinaryFile(binaryPath), sampleRate, wavPath);
             string text = GetTextFromGoogle(wavPath, sampleRate);
             Console.WriteLine(text);
-            WriteTextToTxtFile(text, "../OutputText.txt");
+            WriteTextToTxtFile(text, "./OutputText.txt");
         }
 
         static string GetTextFromGoogle(string filePath, int sampleRate)
@@ -51,11 +52,11 @@ namespace SpeechToTextAgent
 
         static List<float> ReadBinaryFile(string filePath)
         {
+            List<float> audioValues = new List<float>();
             if (File.Exists(filePath))
             {
                 FileStream stream = File.Open(filePath, FileMode.Open);
                 BinaryReader reader = new BinaryReader(stream);
-                List<float> audioValues = new List<float>();
                 while (stream.Position < stream.Length)
                 {
                     float audioVal = reader.ReadSingle();
@@ -63,10 +64,9 @@ namespace SpeechToTextAgent
                 }
 
                 stream.Dispose();
-
-                return audioValues;
             }
-            return null;
+
+            return audioValues;
         }
 
         static void WriteWavFile(List<float> audioValues, int sampleRate, string outputPath)
