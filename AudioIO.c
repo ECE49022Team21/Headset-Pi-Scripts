@@ -218,7 +218,7 @@ void ReadAudioBinary(char* fileName, float* audioValues, int numSamples)
 
 void GetTextFromAudio()
 {
-    system("sudo ./C#Build/SpeechToTextAgent");
+    system("./RunSpeechAgent.sh");
 }
 
 int main()

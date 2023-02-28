@@ -1,0 +1,1 @@
+sudo ./C#Build/SpeechToTextAgent
