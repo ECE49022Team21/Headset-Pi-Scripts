@@ -11,12 +11,8 @@ namespace SpeechToTextAgent
     //dotnet publish --runtime linux-arm --self-contained --framework net6.0
     class SpeechToText
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            /*if (args.Length != 2) return;
-            int sampleRate = int.Parse(args[0]);
-            string binaryPath = args[1];*/
-
             string binaryPath = "./audioOut.b";
             int sampleRate = 8750;
             string wavPath = "./audioOut.wav";
