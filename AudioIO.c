@@ -39,8 +39,7 @@ int Scan_I2C_Bus()
 
     for (int i = 0; i < 127; i++)
     {
-        printf("0x%X   ", address_book[i]);
-        if (i % 8 == 0 ) printf("\n");
+        if (address_book[i] == 1) printf("0x%X   ", i);
     }
 
     // Check and see if ADC was detected on the bus
