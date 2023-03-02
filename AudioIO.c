@@ -248,7 +248,7 @@ void ConfigureCompass()
     Write(Compass_Address, Reg_Compass_Config_A, data, 1);
 
     //Mode Register
-    data[1] = 0b00000000;
+    data[0] = 0;
     Write(Compass_Address, Reg_Compass_Mode, data, 1);
 }
 
@@ -317,7 +317,7 @@ int main()
     WriteNoReg(DAC_Address, data, 2);
     printf("DAC Configured\n");
 
-    //ConfigureCompass();
+    ConfigureCompass();
     printf("Compass Configured\n");
 
     printf("Reading Compass\n");
