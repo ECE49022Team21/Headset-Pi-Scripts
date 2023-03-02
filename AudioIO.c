@@ -321,7 +321,10 @@ int main()
     printf("Compass Configured\n");
 
     printf("Reading Compass\n");
-    ReadCompass();
+    for (int i = 0; i < 1;)
+    {
+        ReadCompass();
+    }
     
     printf("Recording Audio\n");
     int secondsToRecord = 5;
