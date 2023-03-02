@@ -24,16 +24,16 @@ const int Reg_Dac_Output = 0x000;
 
 //Compass Constants
 const int Compass_Address = 0xD;
-const int Reg_Compass_Config_A = 0;
-const int Reg_Compass_Config_B = 1;
-const int Reg_Compass_Mode = 2;
-const int Reg_Compass_Out_X_MSB = 3;
-const int Reg_Compass_Out_X_LSB = 4;
-const int Reg_Compass_Out_Y_MSB = 5;
-const int Reg_Compass_Out_Y_LSB = 6;
-const int Reg_Compass_Out_Z_MSB = 7;
-const int Reg_Compass_Out_Z_LSB = 8;
-const int Reg_Compass_Status = 9;
+const int Reg_Compass_Config_A = 0x0;
+const int Reg_Compass_Config_B = 0x1;
+const int Reg_Compass_Mode = 0x2;
+const int Reg_Compass_Out_X_MSB = 0x3;
+const int Reg_Compass_Out_X_LSB = 0x4;
+const int Reg_Compass_Out_Y_MSB = 0x5;
+const int Reg_Compass_Out_Y_LSB = 0x6;
+const int Reg_Compass_Out_Z_MSB = 0x7;
+const int Reg_Compass_Out_Z_LSB = 0x8;
+const int Reg_Compass_Status = 0x9;
 
 double avgReadTime;
 
@@ -259,14 +259,14 @@ void ReadCompass()
     int outY;
     int outZ;
     
-    Read(Compass_Address, Reg_Compass_Out_X_MSB, data, 1, true);
+    //Read(Compass_Address, Reg_Compass_Out_X_MSB, data, 1, true);
     outX = data[0] << 8;
-    Read(Compass_Address, Reg_Compass_Out_X_LSB, data, 1, true);
+    //Read(Compass_Address, Reg_Compass_Out_X_LSB, data, 1, true);
     outX = outX | data[0];
 
-    Read(Compass_Address, Reg_Compass_Out_Y_MSB, data, 1, true);
+    //Read(Compass_Address, Reg_Compass_Out_Y_MSB, data, 1, true);
     outY = data[0] << 8;
-    Read(Compass_Address, Reg_Compass_Out_Y_LSB, data, 1, true);
+    //Read(Compass_Address, Reg_Compass_Out_Y_LSB, data, 1, true);
     outY = outY | data[0];
 
 
@@ -276,7 +276,7 @@ void ReadCompass()
     outZ = outZ | data[0];
 
     printf("Compass Data: (%d, %d, %d)\n", outX, outY, outZ);
-    Read(0x1E, Reg_Compass_Status, data, 1, true);
+    Read(Compass_Address, Reg_Compass_Status, data, 1, true);
     printf("Status: %d\n", data[0]);
 }
 
