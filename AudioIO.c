@@ -37,6 +37,12 @@ int Scan_I2C_Bus()
         return -1;
     }
 
+    for (int i = 0; i < 127; i++)
+    {
+        printf("0x%X   ", address_book[i]);
+        if (i % 8 == 0 ) printf("\n");
+    }
+
     // Check and see if ADC was detected on the bus
     if (address_book[ADC_Address] != 1)
     {
@@ -286,8 +292,4 @@ int main()
     PlayAudio(audioValues, numSamples);
 
     free(audioValues);
-
-    //TODO
-    //encode numSamples into binary files as the first float (Important for playing audio)
-    //get text from google
 }
