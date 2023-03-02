@@ -259,7 +259,7 @@ void ReadCompass()
     int outY;
     int outZ;
     
-    Read(Compass_Address, Reg_Compass_Out_X_MSB, data, 1, true);
+    /*Read(Compass_Address, Reg_Compass_Out_X_MSB, data, 1, true);
     outX = data[0] << 8;
     Read(Compass_Address, Reg_Compass_Out_X_LSB, data, 1, true);
     outX = outX | data[0];
@@ -275,7 +275,7 @@ void ReadCompass()
     Read(Compass_Address, Reg_Compass_Out_Z_LSB, data, 1, true);
     outZ = outZ | data[0];
 
-    printf("Compass Data: (%d, %d, %d)\n", outX, outY, outZ);
+    printf("Compass Data: (%d, %d, %d)\n", outX, outY, outZ);*/
     Read(Compass_Address, Reg_Compass_Status, data, 1, true);
     printf("Status: %d\n", data[0]);
 }
