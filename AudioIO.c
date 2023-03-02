@@ -317,7 +317,7 @@ int main()
     WriteNoReg(DAC_Address, data, 2);
     printf("DAC Configured\n");
 
-    //ConfigureCompass();
+    ConfigureCompass();
     printf("Compass Configured\n");
 
     printf("Reading Compass\n");
