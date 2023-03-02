@@ -22,6 +22,18 @@ const int Reg_Highest_Conversion = 0b111;
 const int DAC_Address = 0x60;
 const int Reg_Dac_Output = 0x000;
 
+//Compass Constants
+const int Compass_Address = 0xD;
+const int Reg_Compass_Config_A = 0;
+const int Reg_Compass_Config_B = 1;
+const int Reg_Compass_Mode = 2;
+const int Reg_Compass_Out_X_MSB = 3;
+const int Reg_Compass_Out_X_LSB = 4;
+const int Reg_Compass_Out_Y_MSB = 5;
+const int Reg_Compass_Out_Y_LSB = 6;
+const int Reg_Compass_Out_Z_MSB = 7;
+const int Reg_Compass_Out_Z_LSB = 8;
+const int Reg_Compass_Status = 9;
 
 double avgReadTime;
 
@@ -35,11 +47,6 @@ int Scan_I2C_Bus()
     {
         printf("Error! i2c bus scan returned error code: %d\n\n", ret);
         return -1;
-    }
-
-    for (int i = 0; i < 127; i++)
-    {
-        if (address_book[i] == 1) printf("0x%X   ", i);
     }
 
     // Check and see if ADC was detected on the bus
@@ -56,8 +63,16 @@ int Scan_I2C_Bus()
         return -1;
     }
 
+    // Check and see if Compass was detected on the bus
+    if (address_book[Compass_Address] != 1)
+    {
+        printf("Compass was not detected at 0x%X\n", Compass_Address);
+        return -1;
+    }
+
     printf("ADC was detected at 0x%X\n", ADC_Address);
     printf("DAC was detected at 0x%X\n", DAC_Address);
+    printf("Compass was detected at 0x%X\n", Compass_Address);
 
     return 0;
 }
@@ -226,6 +241,44 @@ void GetTextFromAudio()
     system("sudo ./C#Build/SpeechToTextAgent");
 }
 
+void ConfigureCompass()
+{
+    //Config Register A
+    int data[1] = {0b01101000};
+    int n_bytes = 1;
+    Write(Compass_Address, Reg_Compass_Config_A, data, n_bytes);
+
+    //Mode Register
+    data[1] = 0;
+    Write(Compass_Address, Reg_Compass_Mode, data, n_bytes);
+}
+
+void ReadCompass()
+{
+    int data[1];
+    int outX;
+    int outY;
+    int outZ;
+    
+    Read(Compass_Address, Reg_Compass_Out_X_MSB, data, 1, true);
+    outX = data[0] << 8;
+    Read(Compass_Address, Reg_Compass_Out_X_LSB, data, 1, false);
+    outX = outX | data[0];
+
+    Read(Compass_Address, Reg_Compass_Out_Y_MSB, data, 1, false);
+    outY = data[0] << 8;
+    Read(Compass_Address, Reg_Compass_Out_Y_LSB, data, 1, false);
+    outY = outY | data[0];
+
+
+    Read(Compass_Address, Reg_Compass_Out_Z_MSB, data, 1, false);
+    outZ = data[0] << 8;
+    Read(Compass_Address, Reg_Compass_Out_Z_LSB, data, 1, false);
+    outZ = outZ | data[0];
+
+    printf("Compass Data: (%d, %d, %d)\n", outX, outY, outZ);
+}
+
 int main()
 {
     printf("Initializing Audio Collection\n");
@@ -264,6 +317,12 @@ int main()
     data[0] = 0b1111;
     WriteNoReg(DAC_Address, data, 2);
     printf("DAC Configured\n");
+
+    ConfigureCompass();
+    printf("Compass Configured\n");
+
+    printf("Reading Compass");
+    ReadCompass();
     
     printf("Recording Audio\n");
     int secondsToRecord = 5;
