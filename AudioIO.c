@@ -245,12 +245,11 @@ void ConfigureCompass()
 {
     //Config Register A
     int data[1] = {0b01101000};
-    int n_bytes = 1;
-    Write(Compass_Address, Reg_Compass_Config_A, data, n_bytes);
+    Write(Compass_Address, Reg_Compass_Config_A, data, 1);
 
     //Mode Register
-    data[1] = 0;
-    Write(Compass_Address, Reg_Compass_Mode, data, n_bytes);
+    data[1] = 0b00000000;
+    Write(Compass_Address, Reg_Compass_Mode, data, 1);
 }
 
 void ReadCompass()
