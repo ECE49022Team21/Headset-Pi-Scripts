@@ -322,6 +322,10 @@ int main()
 
     printf("Reading Compass");
     ReadCompass();
+    ReadCompass();
+    ReadCompass();
+    ReadCompass();
+    ReadCompass();
     
     printf("Recording Audio\n");
     int secondsToRecord = 5;
