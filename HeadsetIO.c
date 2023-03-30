@@ -63,16 +63,16 @@ int Scan_I2C_Bus()
         return -1;
     }
 
-    // Check and see if Compass was detected on the bus
+    /*// Check and see if Compass was detected on the bus
     if (address_book[Compass_Address] != 1)
     {
         printf("Compass was not detected at 0x%X\n", Compass_Address);
         return -1;
-    }
+    }*/
 
     printf("ADC was detected at 0x%X\n", ADC_Address);
     printf("DAC was detected at 0x%X\n", DAC_Address);
-    printf("Compass was detected at 0x%X\n", Compass_Address);
+    //printf("Compass was detected at 0x%X\n", Compass_Address);
 
     return 0;
 }
@@ -320,7 +320,7 @@ int main()
     WriteNoReg(DAC_Address, data, 2);
     printf("DAC Configured\n");
 
-    ConfigureCompass();
+    /*ConfigureCompass();
     printf("Compass Configured\n");
 
     printf("Reading Compass\n");
@@ -328,7 +328,7 @@ int main()
     {
         usleep(1000000);
         ReadCompass();
-    }
+    }*/
     
     printf("Recording Audio\n");
     int secondsToRecord = 5;
