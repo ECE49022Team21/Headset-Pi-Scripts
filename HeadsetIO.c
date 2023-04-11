@@ -352,8 +352,11 @@ int main()
     printf("Reading Binary\n");
     ReadAudioBinary("audioTest.b", audioValues, numSamples);
 
-    printf("Playing Audio Test\n");
-    PlayAudio(audioValues, numSamples);
+    while (true)
+    {
+        printf("Playing Audio Test\n");
+        PlayAudio(audioValues, numSamples);
+    }
 
     free(audioValues);
 }
