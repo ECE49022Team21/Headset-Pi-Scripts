@@ -440,6 +440,7 @@ int main(int argc, char* argv[])
 
     free(audioValues);*/
 
+    printf("TEST1\n");
     if (argc == 3) //PlayAudio, AudioFileName
     {
         if (strcmp(argv[1], "PlayAudio"))
