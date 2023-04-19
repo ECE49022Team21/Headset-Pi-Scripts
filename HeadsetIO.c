@@ -456,6 +456,7 @@ int main(int argc, char* argv[])
     {
         if (strcmp(argv[1], "ScanAudio"))
         {
+            printf("Scanning Audio");
             ScanAudio();
         }
         else if (strcmp(argv[1], "ScanCompass"))
