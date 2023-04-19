@@ -448,7 +448,7 @@ int main(int argc, char* argv[])
         }
         else
         {
-            printf("Unknown Command");
+            printf("Unknown Command\n");
             return EXIT_FAILURE;
         }
     }
@@ -456,7 +456,7 @@ int main(int argc, char* argv[])
     {
         if (strcmp(argv[1], "ScanAudio"))
         {
-            printf("Scanning Audio");
+            printf("Scanning Audio\n");
             ScanAudio();
         }
         else if (strcmp(argv[1], "ScanCompass"))
@@ -465,13 +465,13 @@ int main(int argc, char* argv[])
         }
         else
         {
-            printf("Unknown Command");
+            printf("Unknown Command\n");
             return EXIT_FAILURE;
         }
     }
     else
     {
-        printf("Incorrect Number of Input Args");
+        printf("Incorrect Number of Input Args\n");
         return EXIT_FAILURE;
     }
 }
