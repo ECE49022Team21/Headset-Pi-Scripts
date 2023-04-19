@@ -21,7 +21,7 @@ namespace SpeechToTextAgent
             WriteWavFile(ReadBinaryFile(binaryPath), sampleRate, wavPath);
             string text = GetTextFromGoogle(wavPath, sampleRate);
             Console.WriteLine(text);
-            WriteTextToTxtFile(text, "./OutputText.txt");
+            WriteTextToTxtFile(text, "./ScannedAudio.txt");
         }
 
         static string GetTextFromGoogle(string filePath, int sampleRate)

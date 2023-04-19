@@ -35,6 +35,8 @@ const int Reg_Compass_Out_Z_MSB = 0x7;
 const int Reg_Compass_Out_Z_LSB = 0x8;
 const int Reg_Compass_Status = 0x9;
 
+const char* ScanAudioStopFileName = "ScanAudioStop.b";
+
 double avgReadTime;
 
 int Scan_I2C_Bus()
@@ -145,7 +147,7 @@ void RecordAudio(float* audioValues, int numSamples)
     {
         audioValues[i] = GetAudioValue(rawValues[i]);
     }
-    printf("Recored with Sample Rate: %f\n", sampleRate);
+    printf("Recorded with Sample Rate: %f\n", sampleRate);
 }
 
 void CleanAudio(float* audioValues, int numSamples)
@@ -281,7 +283,87 @@ void ReadCompass()
     printf("Status: %d\n", data[0]);
 }
 
-int main()
+int ReadScanAudioStop()
+{
+    // Open file:
+    FILE *fd = fopen(("./%s", ScanAudioStopFileName), "r");
+
+    int value = 0;
+
+    //Read file:
+    fread(&value, sizeof(int), 1, fd);
+
+    // Close file:
+    fclose(fd);
+
+    return value;
+}
+
+void WriteScanAudioStop(int value)
+{
+    // Open file:
+    FILE *fd = fopen(("./%s", ScanAudioStopFileName), "w");
+
+    // Write file:
+    fwrite(&value, sizeof(int), 1, fd);
+
+    // Close file:
+    fclose(fd);
+}
+
+void PlayAudioFromFile(char* fileName)
+{
+
+}
+
+void ScanAudio()
+{
+    printf("Recording Audio\n");
+    WriteScanAudioStop(0);
+    int secondsToRecord = 2;
+    int estimatedSampleRate = 8750;
+    int numSamples = secondsToRecord * estimatedSampleRate;
+    float **audioChunks = malloc(sizeof(float*) * 128);
+    int numUsedChunks = 0;
+
+    //while (ReadScanAudioStop() != 1 || numUsedChunks >= 128)
+    while(numUsedChunks < 5)
+    {
+        float *audioValues = malloc(sizeof(float) * numSamples);
+        RecordAudio(audioValues, numSamples);
+        audioChunks[numUsedChunks] = audioValues;
+        numUsedChunks++;
+    }
+
+    int totalNumSamples = numSamples * numUsedChunks;
+    float *combinedAudioValues = malloc(sizeof(float) * totalNumSamples);
+
+    for (int i=0; i < numUsedChunks; i++)
+    {
+        for (int k=0; k < numSamples; k++)
+        {
+            combinedAudioValues[i * numSamples + k] = audioChunks[i][k];
+        }
+        free(audioChunks[i]);
+    }
+    free(audioChunks);
+
+    printf("Cleaning Audio\n");
+    CleanAudio(combinedAudioValues, totalNumSamples);
+
+    printf("Writing Binary\n");
+    WriteAudioBinary("audioOut.b", combinedAudioValues, totalNumSamples);
+
+    printf("Playing Back Recorded Audio\n");
+    PlayAudio(combinedAudioValues, totalNumSamples);
+
+    printf("Coverting Audio To Text\n");
+    GetTextFromAudio();
+
+    free(combinedAudioValues);
+}
+
+int main(int argc, char* argv[])
 {
     printf("Initializing Audio Collection\n");
     // Use the default I2C pins:
@@ -330,7 +412,7 @@ int main()
         ReadCompass();
     }*/
     
-    printf("Recording Audio\n");
+    /*printf("Recording Audio\n");
     int secondsToRecord = 5;
     int estimatedSampleRate = 8000;
     int numSamples = secondsToRecord * estimatedSampleRate;
@@ -352,11 +434,42 @@ int main()
     printf("Reading Binary\n");
     ReadAudioBinary("audioTest.b", audioValues, numSamples);
 
-    while (true)
-    {
-        printf("Playing Audio Test\n");
-        PlayAudio(audioValues, numSamples);
-    }
+    printf("Playing Audio Test\n");
+    PlayAudio(audioValues, numSamples);
 
-    free(audioValues);
+    free(audioValues);*/
+
+    if (argc == 3) //PlayAudio, AudioFileName
+    {
+        if (argv[1] == "PlayAudio")
+        {
+            PlayAudioFromFile(argv[2]);
+        }
+        else
+        {
+            printf("Unknown Command");
+            return EXIT_FAILURE;
+        }
+    }
+    else if (argc == 2) //ScanAudio or ScanCompass
+    {
+        if (argv[1] == "ScanAudio")
+        {
+            ScanAudio();
+        }
+        else if (argv[1] == "ScanCompass")
+        {
+            //TODO
+        }
+        else
+        {
+            printf("Unknown Command");
+            return EXIT_FAILURE;
+        }
+    }
+    else
+    {
+        printf("Incorrect Number of Input Args");
+        return EXIT_FAILURE;
+    }
 }
