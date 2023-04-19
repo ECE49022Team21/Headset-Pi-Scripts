@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "./I2Clib/pi_i2c.h"
 #include "./I2Clib/GPIOlib/get_pi_version.h" // Determines PI versions
@@ -441,7 +442,7 @@ int main(int argc, char* argv[])
 
     if (argc == 3) //PlayAudio, AudioFileName
     {
-        if (argv[1] == "PlayAudio")
+        if (strcmp(argv[1], "PlayAudio"))
         {
             PlayAudioFromFile(argv[2]);
         }
@@ -453,11 +454,11 @@ int main(int argc, char* argv[])
     }
     else if (argc == 2) //ScanAudio or ScanCompass
     {
-        if (argv[1] == "ScanAudio")
+        if (strcmp(argv[1], "ScanAudio"))
         {
             ScanAudio();
         }
-        else if (argv[1] == "ScanCompass")
+        else if (strcmp(argv[1], "ScanCompass"))
         {
             //TODO
         }
