@@ -440,13 +440,10 @@ int main(int argc, char* argv[])
 
     free(audioValues);*/
 
-    printf("TEST1\n");
     if (argc == 3) //PlayAudio, AudioFileName
     {
-        printf("TEST2\n");
-        if (strcmp(argv[1], "PlayAudio"))
+        if (!strcmp(argv[1], "PlayAudio"))
         {
-            printf("TEST7\n");
             PlayAudioFromFile(argv[2]);
         }
         else
@@ -457,15 +454,12 @@ int main(int argc, char* argv[])
     }
     else if (argc == 2) //ScanAudio or ScanCompass
     {
-        printf("TEST3\n");
-        if (strcmp(argv[1], "ScanAudio"))
+        if (!strcmp(argv[1], "ScanAudio"))
         {
-            printf("Scanning Audio\n");
             ScanAudio();
         }
-        else if (strcmp(argv[1], "ScanCompass"))
+        else if (!strcmp(argv[1], "ScanCompass"))
         {
-            printf("TEST4\n");
             //TODO
         }
         else
