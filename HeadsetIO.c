@@ -233,11 +233,11 @@ float* ReadAudioBinary(char* fileName, int *numSamples)
     FILE *fd = fopen(("./AudioFiles/%s", fileName), "r");
 
     printf("Test1\n");
-    fseek(fd, 0L, SEEK_END);
+    fseek(fd, 0, SEEK_END);
     printf("Test2\n");
     long size = ftell(fd);
     printf("Test3\n");
-    fseek(fd, 0L, SEEK_SET);
+    fseek(fd, 0, SEEK_SET);
     printf("Test4\n");
 
     *numSamples = size / sizeof(float);
