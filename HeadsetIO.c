@@ -234,21 +234,15 @@ float* ReadAudioBinary(char* fileName, int *numSamples)
 
     if (fd == NULL) printf("File Not Found\n");
 
-    printf("Test1\n");
     fseek(fd, 0, SEEK_END);
-    printf("Test2\n");
     long size = ftell(fd);
-    printf("Test3\n");
     fseek(fd, 0, SEEK_SET);
-    printf("Test4\n");
 
     *numSamples = size / sizeof(float);
     float *audioValues = malloc(size);
-    printf("Test5\n");
     
     //Read file:
     fread(audioValues, sizeof(float), *numSamples, fd);
-    printf("Test6\n");
 
     // Close file:
     fclose(fd);
