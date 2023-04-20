@@ -240,7 +240,7 @@ float* ReadAudioBinary(char* fileName, int *numSamples)
     float *audioValues = malloc(size);
     
     //Read file:
-    fread(audioValues, sizeof(float), numSamples, fd);
+    fread(audioValues, sizeof(float), *numSamples, fd);
 
     // Close file:
     fclose(fd);
