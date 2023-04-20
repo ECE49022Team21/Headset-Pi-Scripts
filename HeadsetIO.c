@@ -504,4 +504,6 @@ int main(int argc, char* argv[])
         printf("Incorrect Number of Input Args\n");
         return EXIT_FAILURE;
     }
+
+    return EXIT_SUCCESS;
 }
