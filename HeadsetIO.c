@@ -429,7 +429,7 @@ int main(int argc, char* argv[])
         ReadCompass();
     }*/
     
-    /*printf("Recording Audio\n");
+    printf("Recording Audio\n");
     int secondsToRecord = 5;
     int estimatedSampleRate = 8000;
     int numSamples = secondsToRecord * estimatedSampleRate;
@@ -449,12 +449,16 @@ int main(int argc, char* argv[])
     GetTextFromAudio();
 
     printf("Reading Binary\n");
-    ReadAudioBinary("audioTest.b", audioValues, numSamples);
+    free(audioValues);
+
+    audioValues = ReadAudioBinary("audioTest.b", &numSamples);
 
     printf("Playing Audio Test\n");
     PlayAudio(audioValues, numSamples);
 
-    free(audioValues);*/
+    free(audioValues);
+
+
 
     if (argc == 3) //PlayAudio, AudioFileName
     {
