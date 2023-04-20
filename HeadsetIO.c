@@ -327,8 +327,7 @@ void ScanAudio()
     float **audioChunks = malloc(sizeof(float*) * 128);
     int numUsedChunks = 0;
 
-    //while (ReadScanAudioStop() != 1 || numUsedChunks >= 128)
-    while(numUsedChunks < 5)
+    while (ReadScanAudioStop() != 1 || numUsedChunks >= 128)
     {
         float *audioValues = malloc(sizeof(float) * numSamples);
         RecordAudio(audioValues, numSamples);
@@ -413,7 +412,7 @@ int main(int argc, char* argv[])
         ReadCompass();
     }*/
     
-    /*printf("Recording Audio\n");
+    printf("Recording Audio\n");
     int secondsToRecord = 5;
     int estimatedSampleRate = 8000;
     int numSamples = secondsToRecord * estimatedSampleRate;
@@ -438,7 +437,7 @@ int main(int argc, char* argv[])
     printf("Playing Audio Test\n");
     PlayAudio(audioValues, numSamples);
 
-    free(audioValues);*/
+    free(audioValues);
 
     if (argc == 3) //PlayAudio, AudioFileName
     {

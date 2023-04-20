@@ -29,11 +29,15 @@ namespace SpeechToTextAgent
             RecognitionAudio audio = RecognitionAudio.FromFile(filePath);
 
             SpeechClient client = SpeechClient.Create();
+
+            SpeechContext context = new SpeechContext { Phrases = { "elliott hall of music", "elliot", "music", "physics building", "physic", "hovde hall of administration", "hovde", "admin", "brown laboratory of chemistry", "brown", "neil armstrong hall of engineering", "neil", "armstrong", "strong", "heine pharmacy", "heine", "pharmacy", "union club hotel", "club", "hotel", "stewart center", "stew", "heavilon hall", "heavilon", "student health center", "health", "knoy hall", "knoy", "johnson hall of nursing", "johnson", "nurs", "r. b. wetherill laboratory of chemistry", "wetherill", "purdue student union", "purdue", "data science", "data", "grissom hall", "grissom", "hampton hall of civil engineering", "hampton", "civil", "forney hall of chemical engineering", "forney", "chemical", "schleman hall", "schleman", "haas hall", "haas", "has", "potter engineering center", "potter", "armory", "matthews hall", "matthew", "mathew", "psychological sciences building", "psych", "beering hall", "beer", "mathematical sciences building", "math", "stone hall", "stone", "materials science and electrical engineering", "material", "msee", "electrical engineering", "ee", "mechanical engineering", "mechanical", "me", "university hall", "UH", "northwestern parking garage", "northwestern", "parking", "garage", "university lutheran church", "church", "wang hall", "wang", "class of 1950 lecture hall", "1950", "nineteen", "fifty", "pierce hall", "pierce", "wilmeth active learning center", "wilmeth", "active", "walk", "engineering and polytechnic gateway", "polytechnic", "gateway", "chaney hale hall of science", "chaney", "hale", "stanley coulter hall", "stan", "coulter" } };
+
             RecognitionConfig config = new RecognitionConfig
             {
                 Encoding = AudioEncoding.EncodingUnspecified,
                 SampleRateHertz = sampleRate,
                 LanguageCode = LanguageCodes.English.UnitedStates,
+                SpeechContexts = { context }
             };
             RecognizeResponse response = client.Recognize(config, audio);
             string responseString = response.Results.ToString();
