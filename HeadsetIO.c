@@ -227,16 +227,25 @@ void WriteAudioBinary(char* fileName, float* audioValues, int numSamples)
     fclose(fd);
 }
 
-void ReadAudioBinary(char* fileName, float* audioValues, int numSamples)
+float* ReadAudioBinary(char* fileName, int *numSamples)
 {
     // Open file:
-    FILE *fd = fopen(("./%s", fileName), "r");
+    FILE *fd = fopen(("./AudioFiles/%s", fileName), "r");
 
+    fseek(fd, 0L, SEEK_END);
+    long size = ftell(fd);
+    fseek(fd, 0L, SEEK_SET);
+
+    *numSamples = size / sizeof(float);
+    float *audioValues = malloc(size);
+    
     //Read file:
     fread(audioValues, sizeof(float), numSamples, fd);
 
     // Close file:
     fclose(fd);
+
+    return audioValues;
 }
 
 void GetTextFromAudio()
@@ -314,7 +323,13 @@ void WriteScanAudioStop(int value)
 
 void PlayAudioFromFile(char* fileName)
 {
+    printf("Reading Binary\n");
+    int numSamples = 0;
+    float *audioValues = ReadAudioBinary(fileName, &numSamples);
 
+    printf("Playing Audio: %s\n", fileName);
+    PlayAudio(audioValues, numSamples);
+    free(audioValues);
 }
 
 void ScanAudio()
@@ -412,7 +427,7 @@ int main(int argc, char* argv[])
         ReadCompass();
     }*/
     
-    printf("Recording Audio\n");
+    /*printf("Recording Audio\n");
     int secondsToRecord = 5;
     int estimatedSampleRate = 8000;
     int numSamples = secondsToRecord * estimatedSampleRate;
@@ -437,7 +452,7 @@ int main(int argc, char* argv[])
     printf("Playing Audio Test\n");
     PlayAudio(audioValues, numSamples);
 
-    free(audioValues);
+    free(audioValues);*/
 
     if (argc == 3) //PlayAudio, AudioFileName
     {
@@ -460,6 +475,21 @@ int main(int argc, char* argv[])
         else if (!strcmp(argv[1], "ScanCompass"))
         {
             //TODO
+        }
+        else
+        {
+            printf("Unknown Command\n");
+            return EXIT_FAILURE;
+        }
+    }
+    else if (argc >= 3)
+    {
+        if (!strcmp(argv[1], "PlayAudioChain"))
+        {
+            for (int i = 2; i < argc; i++)
+            {
+                PlayAudioFromFile(argv[i]);
+            }
         }
         else
         {
