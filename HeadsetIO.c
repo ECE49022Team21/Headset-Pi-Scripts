@@ -232,6 +232,8 @@ float* ReadAudioBinary(char* fileName, int *numSamples)
     // Open file:
     FILE *fd = fopen(("./AudioFiles/%s", fileName), "r");
 
+    if (fd == NULL) printf("File Not Found\n");
+
     printf("Test1\n");
     fseek(fd, 0, SEEK_END);
     printf("Test2\n");
