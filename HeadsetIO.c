@@ -316,6 +316,8 @@ void WriteScanAudioStop(char value)
     // Open file:
     FILE *fd = fopen(("./%s", ScanAudioStopFileName), "w");
 
+    if (fd == NULL) printf("File Error");
+
     // Write file:
     fwrite(&value, sizeof(char), 1, fd);
 
@@ -346,7 +348,7 @@ void ScanAudio()
     float **audioChunks = malloc(sizeof(float*) * 128);
     int numUsedChunks = 0;
 
-    while (!strcmp(ReadScanAudioStop(), '1') || numUsedChunks >= 128)
+    while (ReadScanAudioStop() != '1' || numUsedChunks >= 128)
     {
         float *audioValues = malloc(sizeof(float) * numSamples);
         RecordAudio(audioValues, numSamples);
