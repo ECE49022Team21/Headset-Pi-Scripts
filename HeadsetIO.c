@@ -230,7 +230,7 @@ void WriteAudioBinary(char* fileName, float* audioValues, int numSamples)
 float* ReadAudioBinary(char* fileName, int *numSamples)
 {
     // Open file:
-    FILE *fd = fopen(("./AudioFiles/%s", fileName), "r");
+    FILE *fd = fopen(("AudioFiles/%s", fileName), "r");
 
     if (fd == NULL) printf("File Not Found\n");
 
@@ -328,6 +328,8 @@ void PlayAudioFromFile(char* fileName)
     printf("Reading Binary\n");
     int numSamples = 0;
     float *audioValues = ReadAudioBinary(fileName, &numSamples);
+    if (audioValues == NULL) return; 
+
 
     printf("Playing Audio: %s\n", fileName);
     PlayAudio(audioValues, numSamples);
