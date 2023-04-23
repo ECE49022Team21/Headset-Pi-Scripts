@@ -36,7 +36,7 @@ const int Reg_Compass_Out_Z_MSB = 0x7;
 const int Reg_Compass_Out_Z_LSB = 0x8;
 const int Reg_Compass_Status = 0x9;
 
-const char* ScanAudioStopFileName = "ScanAudioStop.b";
+const char* ScanAudioStopFileName = "ScanAudioStop.txt";
 
 double avgReadTime;
 
@@ -295,15 +295,15 @@ void ReadCompass()
     printf("Status: %d\n", data[0]);
 }
 
-int ReadScanAudioStop()
+char ReadScanAudioStop()
 {
     // Open file:
     FILE *fd = fopen(("./%s", ScanAudioStopFileName), "r");
 
-    int value = 0;
+    char value = "0";
 
     //Read file:
-    fread(&value, sizeof(int), 1, fd);
+    fread(&value, sizeof(char), 1, fd);
 
     // Close file:
     fclose(fd);
@@ -311,13 +311,13 @@ int ReadScanAudioStop()
     return value;
 }
 
-void WriteScanAudioStop(int value)
+void WriteScanAudioStop(char value)
 {
     // Open file:
     FILE *fd = fopen(("./%s", ScanAudioStopFileName), "w");
 
     // Write file:
-    fwrite(&value, sizeof(int), 1, fd);
+    fwrite(&value, sizeof(char), 1, fd);
 
     // Close file:
     fclose(fd);
@@ -339,14 +339,14 @@ void PlayAudioFromFile(char* fileName)
 void ScanAudio()
 {
     printf("Recording Audio\n");
-    WriteScanAudioStop(0);
+    WriteScanAudioStop('0');
     int secondsToRecord = 2;
     int estimatedSampleRate = 8750;
     int numSamples = secondsToRecord * estimatedSampleRate;
     float **audioChunks = malloc(sizeof(float*) * 128);
     int numUsedChunks = 0;
 
-    while (ReadScanAudioStop() != 1 || numUsedChunks >= 128)
+    while (!strcmp(ReadScanAudioStop(), '1') || numUsedChunks >= 128)
     {
         float *audioValues = malloc(sizeof(float) * numSamples);
         RecordAudio(audioValues, numSamples);
