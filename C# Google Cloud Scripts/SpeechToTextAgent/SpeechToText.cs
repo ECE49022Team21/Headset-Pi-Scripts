@@ -42,6 +42,8 @@ namespace SpeechToTextAgent
             RecognizeResponse response = client.Recognize(config, audio);
             string responseString = response.Results.ToString();
 
+            WriteTextToTxtFile(responseString, "./GoogleLog.txt");
+
             string text = string.Empty;
             if (responseString.Contains("\"transcript\": \""))
             {
