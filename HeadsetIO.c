@@ -300,7 +300,7 @@ char ReadScanAudioStop()
     // Open file:
     FILE *fd = fopen(("./%s", ScanAudioStopFileName), "r");
 
-    char value = "0";
+    char value = '0';
 
     //Read file:
     fread(&value, sizeof(char), 1, fd);
