@@ -433,7 +433,7 @@ int main(int argc, char* argv[])
         ReadCompass();
     }*/
     
-    /*printf("Recording Audio\n");
+    printf("Recording Audio\n");
     int secondsToRecord = 5;
     int estimatedSampleRate = 8000;
     int numSamples = secondsToRecord * estimatedSampleRate;
@@ -460,7 +460,7 @@ int main(int argc, char* argv[])
     printf("Playing Audio Test\n");
     PlayAudio(audioValues, numSamples);
 
-    free(audioValues);*/
+    free(audioValues);
 
 
 
