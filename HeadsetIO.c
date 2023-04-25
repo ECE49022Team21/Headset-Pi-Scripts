@@ -446,11 +446,8 @@ int main(int argc, char* argv[])
     printf("Writing Binary\n");
     WriteAudioBinary("audioOut.b", audioValues, numSamples);
 
-    while (true)
-    {
-        printf("Playing Back Recorded Audio\n");
-        PlayAudio(audioValues, numSamples);
-    }
+    printf("Playing Back Recorded Audio\n");
+    PlayAudio(audioValues, numSamples);
 
     printf("Coverting Audio To Text\n");
     GetTextFromAudio();
@@ -460,8 +457,11 @@ int main(int argc, char* argv[])
 
     audioValues = ReadAudioBinary("audioTest.b", &numSamples);
 
-    printf("Playing Audio Test\n");
-    PlayAudio(audioValues, numSamples);
+    while (true)
+    {
+        printf("Playing Audio Test\n");
+        PlayAudio(audioValues, numSamples);
+    }
 
     free(audioValues);
 
